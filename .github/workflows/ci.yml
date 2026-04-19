@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pre-commit:
+    name: pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Run pre-commit on all files
+        run: pre-commit run --all-files --show-diff-on-failure
+
+  no-real-data:
+    name: no-real-data sanity check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Block forbidden filenames
+        run: |
+          set -e
+          BAD=$(find . -type f \( \
+            -name 'transactions_*.json' -o \
+            -name 'accounts_latest.json' -o \
+            -name 'holdings_*.json' -o \
+            -name '*.ofx' -o \
+            -name '*.qfx' \
+          \) -not -path './.git/*' || true)
+          if [ -n "$BAD" ]; then
+            echo "Forbidden data files detected:"
+            echo "$BAD"
+            exit 1
+          fi
+
+      - name: Block memory/ directory
+        run: |
+          if find . -type d -name memory -not -path './.git/*' | grep -q .; then
+            echo "A 'memory/' directory exists in the repo. Memory files must live OUTSIDE the repo."
+            exit 1
+          fi
