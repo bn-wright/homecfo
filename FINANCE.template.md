@@ -27,10 +27,58 @@ What you do NOT need:
   - To touch your global Claude settings
   - Any technical setup beyond "save file, open Claude"
 
-What stays private:
-  Everything in this folder stays on your machine. This file and your CSVs are
-  read by Claude locally. They're never uploaded anywhere unless YOU paste
-  them into a chat window.
+=============================================================================
+PRIVACY — READ THIS BEFORE YOU PASTE ANYTHING
+
+There is an important distinction between Claude Code reading files
+locally and you sending data to Claude in a chat.
+
+  LOCAL (private)            SENT TO ANTHROPIC (not private)
+  ─────────────────────      ───────────────────────────────────────────
+  Claude Code (the CLI)      Claude.ai web app or mobile app
+  reads files from disk      File upload buttons, drag-and-drop into chat
+  in this folder             Pasting CSV contents into a chat message
+                             Screenshots of statements
+
+When you use Claude Code in this folder, the files here ARE read into
+the conversation that Anthropic processes. The privacy claim is not "your
+data is invisible to Anthropic" — it's "your data isn't stored in a
+database somewhere indexed by your account, and it doesn't leave your
+machine until YOU send a message."
+
+Specifically:
+  - Anthropic processes the contents of every message you send, including
+    file contents Claude reads on your behalf during the conversation.
+  - Per Anthropic's policy, conversation data may be retained for safety
+    review and may be used to improve models depending on your account
+    settings. Check claude.com/legal for current terms.
+  - Once a conversation ends and is deleted, the data is no longer
+    accessible to you — but operational logs may persist on Anthropic's
+    side for a period defined by their retention policy.
+
+Practical guidance:
+  - Use Claude Code (this CLI tool), not the web/mobile chat, for finance
+    work. CLI conversations have the same privacy properties but at least
+    your files stay on disk between sessions.
+  - Do NOT paste account numbers, SSN, routing numbers, full credit card
+    numbers, or login credentials into ANY Claude conversation. Categorized
+    transaction data and round-number balances are reasonable; raw
+    statements with identifiers are not.
+  - If you wouldn't be comfortable with the contents of this file showing
+    up in a future model's training data, don't put it in this file.
+  - Review your Anthropic account's data settings at console.anthropic.com
+    or claude.com/settings — there are toggles for training-data usage.
+
+What's safer to keep here:
+  ✅ Round-number net worth, age, target retirement age
+  ✅ Categorized transactions (merchant names, categories, amounts)
+  ✅ Account NICKNAMES ("Chase Checking", not "Chase ****1234")
+
+What does NOT belong in this file or your CSV:
+  ❌ Account numbers ("Ending in 1234" or full numbers)
+  ❌ Routing numbers, SSN, EINs
+  ❌ Login credentials, API keys, session cookies
+  ❌ Photos/PDFs of statements (those carry account numbers in headers)
 =============================================================================
 -->
 
