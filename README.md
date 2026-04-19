@@ -96,6 +96,20 @@ homeCFO/
 - People without 30 minutes to fill in memory files — this is a tool, not a product
 - People looking for licensed financial advice — talk to a CFP
 
+## Roadmap
+
+v0.1 is deliberately small. Likely directions for v0.2+ — order will follow what users actually ask for:
+
+- **Alternative ingestion paths.** v0.1 assumes you bring your own data files (CSV exports, your own scraper, etc.). v0.2 will document optional integrations for users who'd rather wire in an existing aggregator:
+  - [Truthifi](https://truthifi.com) via MCP (hosted; data leaves your machine in exchange for no scraping)
+  - Plaid-backed services via a thin adapter
+  - Generic CSV importer with a column-mapping helper
+- **More skills**: `tax-loss-harvest-checker`, `equity-grant-tracker`, `mortgage-vs-invest`, `quarterly-review` (one-shot driver for the example walkthrough)
+- **More templates**: `equity_grants`, `rentals`, `tax_plan`, `business_income`
+- **Cross-platform Quickstart**: Linux/macOS-native instructions alongside the current Windows + PowerShell paths
+
+The hard line stays the same: anything that sends data off your machine is opt-in, documented, and never the default.
+
 ## Security
 
 Your financial data never leaves your machine. The `.gitignore` blocks all data files from ever entering Git. Pre-commit hooks scan for leaked account numbers. See [SECURITY.md](SECURITY.md) for the full threat model.
