@@ -57,9 +57,12 @@ Specifically:
     side for a period defined by their retention policy.
 
 Practical guidance:
-  - Use Claude Code (this CLI tool), not the web/mobile chat, for finance
-    work. CLI conversations have the same privacy properties but at least
-    your files stay on disk between sessions.
+  - Use Claude Code (this CLI tool) rather than the web/mobile chat. Both
+    transmit file contents to Anthropic during an active conversation, but
+    the CLI doesn't leave uploaded copies sitting in your Anthropic account
+    between sessions — your files only exist on your disk. The web/mobile
+    chat creates a server-side copy of every file you upload, which lives
+    under Anthropic's retention policy until you (or they) delete it.
   - Do NOT paste account numbers, SSN, routing numbers, full credit card
     numbers, or login credentials into ANY Claude conversation. Categorized
     transaction data and round-number balances are reasonable; raw
