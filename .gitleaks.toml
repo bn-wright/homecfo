@@ -1,0 +1,55 @@
+# gitleaks configuration for homeCFO
+# Extends default ruleset with finance-specific patterns to prevent
+# leaking real account numbers, balances, or PII into git history.
+
+title = "homeCFO gitleaks rules"
+
+[extend]
+useDefault = true
+
+# ---------------------------------------------------------------------------
+# Finance-specific custom rules
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "account-number-pattern"
+description = "Account number reference like 'Ending in 1234' or 'XXXXX1234'"
+regex = '''(?i)(ending\s+in|account\s+(number|#|no\.?))\s*[-:]?\s*\d{4,}'''
+tags = ["pii", "finance"]
+
+[[rules]]
+id = "ssn-pattern"
+description = "Possible SSN"
+regex = '''\b\d{3}-\d{2}-\d{4}\b'''
+tags = ["pii"]
+
+[[rules]]
+id = "routing-number-pattern"
+description = "Possible routing number (9 digits in finance context)"
+regex = '''(?i)(routing|aba|ach)\s*[-:#]?\s*\d{9}\b'''
+tags = ["finance"]
+
+[[rules]]
+id = "credit-card-pattern"
+description = "Credit card number"
+regex = '''\b(?:\d[ -]*?){13,16}\b'''
+tags = ["pii", "finance"]
+
+# ---------------------------------------------------------------------------
+# Allowlist — patterns that look like leaks but aren't
+# ---------------------------------------------------------------------------
+
+[allowlist]
+description = "Allow placeholder patterns in templates and docs"
+paths = [
+    '''memory-templates/.*''',
+    '''examples/.*''',
+    '''README\.md''',
+    '''PHILOSOPHY\.md''',
+]
+regexes = [
+    '''XXXX''',                          # placeholder
+    '''ending\s+in\s+XXXX''',            # template placeholder
+    '''\$X[,X]*\.?X*''',                 # dollar placeholders like $X,XXX
+    '''\[.*?\]''',                       # markdown placeholders [your name]
+]
