@@ -4,6 +4,14 @@ All notable changes to homeCFO are documented here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+### Added
+- README "Bringing in transaction data" section explaining accepted file formats
+- `update-financials` skill now explicitly handles CSV input (Empower-style and lookalikes) with flexible column mapping
+- README Roadmap section flagging v0.2 ingestion paths (Truthifi MCP, Plaid, generic CSV importer)
+
+### Changed
+- `update-financials` skill description and "Required inputs" updated to acknowledge both JSON and CSV paths
+
 ## [0.1.0] - 2026-04-19
 
 Initial public release.

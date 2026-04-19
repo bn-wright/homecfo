@@ -18,18 +18,62 @@ This skill ingests fresh financial data from local files and updates the user's 
 ## What this skill does
 
 1. **Locate the latest data files.** Look in the user's data directory (path is in their CLAUDE.md) for files matching:
-   - `transactions_YYYY.json` or `transactions_*.csv`
-   - `accounts_latest.json` or `accounts_*.json`
-   - `holdings_*.json`
-2. **Diff against current memory.** Compare new data to what's in `spending_kb.md`, `investments.md`, etc.
-3. **Update the memory files.** Append new transactions, refresh balances, recompute totals.
-4. **Summarize changes.** Show the user a brief diff: new transactions, balance deltas, any unusual line items.
+   - `transactions_YYYY.json` or `transactions_*.csv` (or `.tsv`, `.xlsx`)
+   - `accounts_latest.json` or `accounts_*.json`/`accounts_*.csv`
+   - `holdings_*.json` or `holdings_*.csv`
+2. **Detect format and parse accordingly** (see "Input formats" below).
+3. **Diff against current memory.** Compare new data to what's in `spending_kb.md`, `investments.md`, etc.
+4. **Update the memory files.** Append new transactions, refresh balances, recompute totals.
+5. **Summarize changes.** Show the user a brief diff: new transactions, balance deltas, any unusual line items.
+
+## Input formats
+
+The skill must handle both JSON (from a custom scraper) and CSV (from a manual export). Detect by file extension and use the matching path.
+
+### JSON path
+
+Expected shape (or compatible — be flexible):
+
+```json
+{ "transactions": [ { "date": "YYYY-MM-DD", "amount": -12.34, "description": "...", "category": "...", "account": "..." }, ... ] }
+```
+
+Or a bare array of transactions. If the shape is unfamiliar, read the first record and adapt.
+
+### CSV path (Empower export and lookalikes)
+
+Empower's "Download Transactions" CSV typically has columns like:
+
+```
+Date, Account, Description, Category, Tags, Amount
+2026-04-15, Chase Checking, "STARBUCKS #1234", Dining, , -6.85
+```
+
+Other institutions use variants — Mint-style, Monarch, raw bank exports. **Don't hard-code column names**. Instead:
+
+1. Read the first row as headers
+2. Map flexibly using these synonyms:
+   - **Date**: `Date`, `Transaction Date`, `Posted Date`, `Trans Date`
+   - **Amount**: `Amount`, `Debit`/`Credit` pair (combine: credit positive, debit negative)
+   - **Description**: `Description`, `Merchant`, `Payee`, `Name`, `Memo`
+   - **Category**: `Category`, `Tags`, `Classification`
+   - **Account**: `Account`, `Account Name`, `Source Account`
+3. If a required field (date or amount) can't be mapped, **stop and ask the user** — don't guess.
+4. Sign convention: in the normalized output, **negative = money out, positive = money in**. Convert if the source uses a different convention (e.g., all-positive with separate Debit/Credit columns, or Empower's "Amount" column which is already signed).
+
+After parsing, treat the result identically to the JSON path.
+
+### Tips for CSV-only users
+
+- If `accounts_latest.csv` is missing (most CSV exports don't include balances), skip the balance-refresh step and tell the user. They can paste current balances into `investments.md` manually for the next quarterly review.
+- Empower's CSV doesn't include investment holdings — only cash transactions. For holdings, the user will need to update `investments.md` by hand or via a separate export.
+- Save a normalized JSON copy alongside the CSV (`transactions_2026.json`) so subsequent runs are fast and the JSON path can be used.
 
 ## Required inputs
 
 - The user's CLAUDE.md must specify their data directory path
-- Source files must already exist in that directory (this skill does NOT fetch them)
-- Files must be JSON or CSV in a recognizable shape (account list, transaction list, holdings list)
+- At least one source file (CSV or JSON) must exist in that directory
+- This skill does NOT fetch data from any service
 
 ## Output format
 

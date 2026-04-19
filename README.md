@@ -57,6 +57,16 @@ Now open Claude Code and ask:
 - *"Am I on track to retire at 50?"*
 - *"I just spent $2,000 on a couch. Does that matter?"*
 
+## Bringing in transaction data
+
+Drop any of these into your `~/finance-data/` directory and the `update-financials` skill picks them up:
+
+- `transactions_YYYY.csv` — exported from Empower, Mint, Monarch, or your bank's portal. The skill auto-detects common column-name variants (Date/Transaction Date, Amount/Debit+Credit, Description/Merchant/Payee, etc.). If a column can't be mapped, Claude will ask before guessing.
+- `transactions_YYYY.json` — output from a custom scraper, in `{"transactions": [...]}` shape or a bare array.
+- `accounts_latest.json` — current account balances. Optional; only if your data source provides them. Most CSV exports don't include balances, in which case you update `investments.md` by hand at quarterly reviews.
+
+The skill normalizes whatever you feed it into a consistent internal shape (negative = money out, positive = money in) before updating memory files.
+
 Claude loads your memory files and gives you a contextual answer.
 
 ## Repository Layout
