@@ -21,7 +21,15 @@ Most personal finance tools want you to log in every week and scroll their chart
 - Affiliate links, robo-advisor upsells, or "premium tier" walls
 - Any data leaving your machine, ever
 
-## Quickstart (10 Minutes)
+## Two ways in
+
+**Lite (5 minutes, no install):** copy [`FINANCE.template.md`](FINANCE.template.md) into any folder, rename it `FINANCE.md`, fill in the "ABOUT YOU" section at the top, drop your transaction CSV in the same folder, and open Claude Code in that folder. That's it. One self-contained file replaces the skills + templates dance.
+
+**Full (10 minutes, what's below):** install the three skills into your global Claude config, set up five separate memory templates in a private data directory, point Claude at them via `~/.claude/CLAUDE.md`. More setup, more power — best if you want different memory for different households or more specialized skills over time.
+
+If you're not sure, start Lite. You can graduate later.
+
+## Quickstart — Full setup (10 Minutes)
 
 ```bash
 # 1. Clone the repo

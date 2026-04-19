@@ -5,6 +5,8 @@ All notable changes to homeCFO are documented here. Format follows [Keep a Chang
 ## [Unreleased]
 
 ### Added
+- `FINANCE.template.md` — single-file "Lite" version of homeCFO. Drop one MD into a folder with a CSV, open Claude Code, done. No skill install, no separate templates. Embeds perspective math, FI projection, and CSV ingestion inline.
+- README "Two ways in" section presenting Lite vs Full setup paths
 - README "Bringing in transaction data" section explaining accepted file formats
 - `update-financials` skill now explicitly handles CSV input (Empower-style and lookalikes) with flexible column mapping
 - README Roadmap section flagging v0.2 ingestion paths (Truthifi MCP, Plaid, generic CSV importer)
