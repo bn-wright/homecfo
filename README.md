@@ -24,7 +24,7 @@ When you ask Claude a question, the relevant file contents are transmitted to An
 
 ## How this differs from other Claude + finance projects
 
-There's real prior art here. If you're shopping the space, look at these first:
+There's real prior art here — this is a snapshot as of April 2026; the space is moving fast, so check for yourself. If you're shopping around, look at these first:
 
 - **[Show HN: Use Codex/Claude Code as your personal financial assistant](https://news.ycombinator.com/item?id=47232547)** — same shape (coding-agent CLI + local files). homeCFO is a packaged skill set rather than a free-form prompt project, and is FIRE-specific rather than general budgeting.
 - **[Claude-Budget-Workspace-Template](https://github.com/danielrosehill/Claude-Budget-Workspace-Template)** — household-budget workspace for Claude Code, closest sibling. homeCFO ships skills (with `SKILL.md` + YAML frontmatter per Anthropic's conventions) instead of agents/slash-commands, and focuses on FI-date projection and spending-perspective reframing rather than general budget management.
