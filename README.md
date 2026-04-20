@@ -33,8 +33,8 @@ If you're not sure, start Lite. You can graduate later.
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/homeCFO.git
-cd homeCFO
+git clone https://github.com/YOUR_USERNAME/homecfo.git
+cd homecfo
 
 # 2. Create a private data directory OUTSIDE the repo
 mkdir ~/finance-data
@@ -49,7 +49,7 @@ for f in *.template.md; do mv "$f" "${f/.template/}"; done
 #   Get-ChildItem *.template.md | Rename-Item -NewName { $_.Name -replace '\.template','' })
 
 # 5. Install the Claude skills into your user config
-cp -r <homeCFO-path>/skills/* ~/.claude/skills/
+cp -r <homecfo-path>/skills/* ~/.claude/skills/
 
 # 6. Tell Claude where your memory lives
 cat >> ~/.claude/CLAUDE.md <<'EOF'
@@ -80,7 +80,7 @@ Claude loads your memory files and gives you a contextual answer.
 ## Repository Layout
 
 ```
-homeCFO/
+homecfo/
 ├── README.md                    # You are here
 ├── PHILOSOPHY.md                # The operator mindset
 ├── LICENSE                      # MIT — use it, fork it, sell services around it
