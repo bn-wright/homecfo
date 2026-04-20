@@ -29,10 +29,12 @@ If you're unsure whether something counts as "real data," it does. Use placehold
 1. **Open an issue first** for non-trivial changes. A new skill or a template overhaul deserves a quick discussion before you write 500 lines.
 2. **Fork and branch.** Branch names: `feat/<short-name>`, `fix/<short-name>`, `docs/<short-name>`.
 3. **Install pre-commit hooks** before your first commit:
+
    ```bash
    pip install pre-commit
    pre-commit install
    ```
+
 4. **Make the change.** Keep PRs focused — one skill or one fix per PR.
 5. **Update the changelog.** Add an entry to `CHANGELOG.md` under `## [Unreleased]`.
 6. **Open the PR.** Use the PR template. Tick the "no real financial data" checkbox honestly.

@@ -5,15 +5,19 @@ title: "[feature] "
 labels: enhancement
 ---
 
-**The problem**
+### The problem
+
 What's the operator-mindset gap this would close?
 
-**The proposed change**
+### The proposed change
+
 What would you add or change?
 
-**Alternatives considered**
+### Alternatives considered
+
 What else could solve the same problem?
 
-**Confirm**
+### Confirm
+
 - [ ] This does NOT propose adding a scraper for a specific bank/brokerage
 - [ ] This does NOT propose anything that sends data off the user's machine

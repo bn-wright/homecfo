@@ -44,7 +44,7 @@ Or a bare array of transactions. If the shape is unfamiliar, read the first reco
 
 Empower's "Download Transactions" CSV typically has columns like:
 
-```
+```csv
 Date, Account, Description, Category, Tags, Amount
 2026-04-15, Chase Checking, "STARBUCKS #1234", Dining, , -6.85
 ```
@@ -77,7 +77,7 @@ After parsing, treat the result identically to the JSON path.
 
 ## Output format
 
-```
+```markdown
 ## Financial update — {{DATE}}
 
 **Sources read:** transactions_2026.json (N tx, last: YYYY-MM-DD), accounts_latest.json

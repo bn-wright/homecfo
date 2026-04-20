@@ -7,12 +7,14 @@ Replace every {{PLACEHOLDER}} with your real value or delete the section.
 # User Profile
 
 ## Identity
+
 - **Primary:** {{YOUR_NAME}}, age {{AGE}}, {{LOCATION}}
 - **Spouse/partner:** {{NAME}}, age {{AGE}} (if applicable)
 - **Dependents:** {{N_KIDS}} children, ages {{AGES}}
 - **Filing status:** {{married_jointly | single | head_of_household}}
 
 ## Household income (annual, gross)
+
 - Primary salary: ${{XXX,XXX}}
 - Spouse salary: ${{XXX,XXX}}
 - Bonus / variable comp (expected): ${{XX,XXX}}
@@ -38,6 +40,7 @@ Replace every {{PLACEHOLDER}} with your real value or delete the section.
 ## Properties (if applicable)
 
 ### {{Address city/state — e.g., "Primary residence, Austin TX"}}
+
 - Estimated value: ${{XXX,XXX}}
 - Mortgage balance: ${{XXX,XXX}}
 - Rate: {{X.XX}}%
@@ -45,6 +48,7 @@ Replace every {{PLACEHOLDER}} with your real value or delete the section.
 - Other monthly (taxes, insurance, HOA): ${{XXX}}
 
 ### {{Rental — city/state}} (repeat per property)
+
 - Estimated value / mortgage / rate / payment / monthly rent / net cash flow
 
 ## Recurring monthly expenses (baseline, in dollars)

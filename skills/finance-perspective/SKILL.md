@@ -45,7 +45,7 @@ The user's CLAUDE.md tells you the absolute path.
 
 Keep it short. Aim for under 200 words unless the user asks for depth.
 
-```
+```markdown
 **Verdict:** [Noise / Absorbable / Worth attention]
 
 **The math:**
@@ -69,6 +69,7 @@ Keep it short. Aim for under 200 words unless the user asks for depth.
 > **Verdict:** Noise.
 >
 > **The math:**
+>
 > - Concern: $2,000
 > - Monthly portfolio drift: ~$11,700 (concern is 17% of one month)
 > - Locked-in savings: $60k/yr (concern is 3.3% of one year)
@@ -86,6 +87,7 @@ Keep it short. Aim for under 200 words unless the user asks for depth.
 > **Verdict:** Worth attention.
 >
 > **The math:**
+>
 > - Lost contributions: $60k
 > - Lost compounding on those contributions over 5 yrs: ~$24k
 > - FI date impact: ~14 months

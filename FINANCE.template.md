@@ -175,7 +175,7 @@ Compute three numbers:
 
 Then deliver:
 
-```
+```markdown
 **Verdict:** [Noise / Absorbable / Worth attention]
 
 - Concern: $X
@@ -199,11 +199,12 @@ Trigger phrases: "when can I retire", "am I on track", "what's my FI date",
 
 Use the future-value formula:
 
-```
+```text
 FV = P × (1 + r)^t  +  C × ((1 + r)^t − 1) / r
 ```
 
 Where:
+
 - `P` = current investable assets
 - `C` = annual savings
 - `r` = real return (default 5% = 7% nominal − 2% inflation)
@@ -234,7 +235,7 @@ money in**.
 
 After parsing, summarize:
 
-```
+```markdown
 ## Update — {{today's date}}
 
 **Source:** {{filename}} ({{N transactions}}, range YYYY-MM-DD to YYYY-MM-DD)

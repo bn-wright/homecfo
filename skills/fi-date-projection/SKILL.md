@@ -26,9 +26,11 @@ Also use as part of the quarterly review (see `examples/quarterly-review-walkthr
    - FI target amount (from `retirement_snapshot.md`)
    - Expected real return assumption (default 7% nominal / ~5% real, but use the user's assumption if specified)
 2. **Project forward.** Use the standard future-value formula:
-   ```
+
+   ```text
    FV = P × (1 + r)^t + C × ((1 + r)^t − 1) / r
    ```
+
    where P = current portfolio, C = annual contribution, r = annual return, t = years.
    Solve for `t` such that `FV ≥ FI target`.
 3. **Express the answer as a date.** Add `t` years to today.
@@ -37,7 +39,7 @@ Also use as part of the quarterly review (see `examples/quarterly-review-walkthr
 
 ## Output format
 
-```
+```markdown
 ## FI Projection — {{DATE}}
 
 **Inputs:**

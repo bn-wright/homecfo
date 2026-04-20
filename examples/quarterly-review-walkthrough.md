@@ -22,11 +22,13 @@ Claude loads `MEMORY.md`, then `user_profile.md`, `investments.md`, `retirement_
 > ## Q2 Review — 2026-07-01
 >
 > ### Net worth change
+>
 > - End of Q1: $1,000,000
 > - End of Q2: $1,047,500 (+$47,500, +4.75%)
 > - Source of change: contributions $12,500 + market gain $35,000
 >
 > ### Allocation drift
+>
 > | Class | Target | Actual | Drift |
 > |-------|--------|--------|-------|
 > | US equity | 60% | 64% | +4 |
@@ -37,21 +39,26 @@ Claude loads `MEMORY.md`, then `user_profile.md`, `investments.md`, `retirement_
 > Recommendation: rebalance ~$40k from US equity into intl + bonds at next contribution.
 >
 > ### Spending vs baseline
+>
 > - Baseline monthly burn: $11,000
 > - Q2 actual avg: $11,400 (+3.6%)
 > - Driver: April vacation (+$2,800), otherwise within norms
 >
 > ### FI date update
+>
 > - Last quarter projection: 2038-09 (age 50, ~12.2 yrs away)
 > - This quarter: 2038-08 (age 50, ~12.1 yrs away)
 > - Net change: pulled in by ~1 month due to Q2 market gain
 >
 > ### What to discuss
+>
 > 1. Allocation rebalance (above) — small but worth doing
 > 2. Vacation overshoot is noise, no action needed
 > 3. Cash position is at target; no excess to deploy
 >
 > ### Anything I should know about Q3?
+
+---
 
 > **Sam:** We're considering a $30k bathroom remodel. Worth it against the timeline?
 
@@ -60,6 +67,7 @@ Claude invokes `finance-perspective`:
 > **Verdict:** Absorbable.
 >
 > **The math:**
+>
 > - Concern: $30,000 (likely from cash, not portfolio sale)
 > - Monthly portfolio drift: ~$6,100 (concern is ~5 months of drift)
 > - Locked-in savings: $50k/yr (concern is 60% of one year's contributions, but you're not skipping savings)
@@ -68,6 +76,8 @@ Claude invokes `finance-perspective`:
 > **Why:** A $30k cash purchase pushes the FI date out by ~3 months. That's real but not severe — you'd retire in October instead of August 2038. If the bathroom is a multi-decade quality-of-life upgrade, the math supports it.
 >
 > **Action:** Decide on quality-of-life grounds, not financial. The numbers work either way.
+
+---
 
 > **Sam:** Done. Update the snapshot.
 

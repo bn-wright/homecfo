@@ -45,6 +45,7 @@ This is what gets loaded when the user asks "am I on track?" or "when can I reti
 - Single-quarter market drawdown of {{10–15}}% → recovers within {{18–24}} months historically
 
 ## Notes
+
 - Last formal review: {{YYYY-MM-DD}}
 - Next quarterly review: {{YYYY-MM-DD}}
 - {{Any household-specific assumptions, e.g., "kids' college funded separately via 529"}}

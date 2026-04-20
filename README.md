@@ -79,7 +79,7 @@ Claude loads your memory files and gives you a contextual answer.
 
 ## Repository Layout
 
-```
+```text
 homecfo/
 ├── README.md                    # You are here
 ├── PHILOSOPHY.md                # The operator mindset

@@ -28,12 +28,14 @@ Refresh this file via the `update-financials` skill or by hand quarterly.
 ## Holdings by account
 
 ### {{Account 1, e.g., Taxable brokerage}}
+
 | Symbol | Shares | Value | Notes |
 |--------|--------|-------|-------|
 | VTI    | XXX    | $XX,XXX | |
 | VXUS   | XXX    | $XX,XXX | |
 
 ### {{Account 2, e.g., 401(k)}}
+
 | Symbol | Shares | Value | Notes |
 |--------|--------|-------|-------|
 | ...    | ...    | ...     | |
@@ -49,6 +51,7 @@ Refresh this file via the `update-financials` skill or by hand quarterly.
 - {{YYYY-MM-DD}}: {{action}}
 
 ## Notes for Claude
+
 - Update headline numbers if the underlying holding values shift more than ~3%
 - Treat the {{X}} fund as effectively cash for projection purposes
 - {{Any other quirks specific to your portfolio}}

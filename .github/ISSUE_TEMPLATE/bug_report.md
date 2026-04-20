@@ -5,22 +5,28 @@ title: "[bug] "
 labels: bug
 ---
 
-**What happened**
+### What happened
+
 A clear description of what went wrong.
 
-**What you expected**
+### What you expected
+
 What you thought should happen instead.
 
-**Reproduction**
+### Reproduction
+
 Steps to reproduce:
+
 1.
 2.
 3.
 
-**Environment**
+### Environment
+
 - OS:
 - Claude Code version:
 - Skill (if applicable):
 
-**Confirm**
+### Confirm
+
 - [ ] This issue does NOT contain real financial data

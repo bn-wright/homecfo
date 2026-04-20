@@ -61,5 +61,6 @@ These are the categories Claude uses to bucket transactions. Add or rename as ne
 - {{Add household-specific exclusions here}}
 
 ## Notes
+
 - Last sync source: {{path/to/transactions_YYYY.json}}
 - Last sync date: {{YYYY-MM-DD}}

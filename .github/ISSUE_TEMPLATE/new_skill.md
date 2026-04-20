@@ -5,22 +5,28 @@ title: "[skill] "
 labels: skill, enhancement
 ---
 
-**Skill name**
+### Skill name
+
 e.g., `tax-loss-harvest-checker`
 
-**When it should trigger**
+### When it should trigger
+
 What user phrases or contexts? Be specific — this becomes the skill's `description`.
 
-**What it does**
+### What it does
+
 Step-by-step workflow Claude would follow.
 
-**Memory files it reads**
+### Memory files it reads
+
 Which existing memory templates does it depend on? Does it need a new one?
 
-**Output format**
+### Output format
+
 Sketch the structure of what the user sees back.
 
-**Confirm**
+### Confirm
+
 - [ ] This skill matches the repo philosophy (insight, not daily-checking)
 - [ ] This skill does NOT require a third-party API or paid service
 - [ ] This skill does NOT give specific investment advice
