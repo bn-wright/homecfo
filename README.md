@@ -33,7 +33,7 @@ If you're not sure, start Lite. You can graduate later.
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/homecfo.git
+git clone https://github.com/bn-wright/homecfo.git
 cd homecfo
 
 # 2. Create a private data directory OUTSIDE the repo
