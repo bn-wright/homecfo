@@ -105,7 +105,7 @@ homecfo/
 - Tech workers, HENRYs, and FIRE-curious households who already think in systems
 - People who've outgrown Mint/Monarch and want something more analytical
 - Anyone already using Claude Code who's tired of re-explaining their finances every session
-- Households earning $200k+ where the difference between "sloppy" and "operated" finances compounds into hundreds of thousands of dollars
+- Households earning $100k+ where the difference between "sloppy" and "operated" finances compounds into hundreds of thousands of dollars
 
 ## Who This Is Not For
 
@@ -134,7 +134,7 @@ Your financial data never leaves your machine. The `.gitignore` blocks all data 
 
 ## Philosophy
 
-You wouldn't run a company by glancing at QuickBooks once a month. You'd have a CFO who knows the books cold, tells you when something matters, and doesn't bother you when it doesn't. That's what this repo is.
+You wouldn't run a company by glancing at QuickBooks once a month. You'd have a CFO who knows the books thoroughly, tells you when something matters, and doesn't bother you when it doesn't. That's what this repo is.
 
 Read [PHILOSOPHY.md](PHILOSOPHY.md) for the long version.
 
