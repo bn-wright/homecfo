@@ -1,8 +1,12 @@
 # Security & Privacy
 
-## The promise
+## The design (honest version)
 
-Your financial data never leaves your machine. This repo contains no data — only templates, skills, and documentation. The whole design is built around keeping your numbers on your local disk and out of Git.
+Your financial data is **stored** on your machine — this repo contains no data, only templates, skills, and documentation, and the whole design keeps your numbers on your local disk and out of Git. There is no SaaS backend, no aggregator, no server-side database tied to your account holding balances or transactions between sessions.
+
+What this does NOT mean: that Anthropic never sees your numbers. When you ask Claude a question, the file contents Claude reads are transmitted to Anthropic as part of that conversation — that's how the model has context to answer. Those conversations are subject to Anthropic's retention and (depending on your account settings) training policies. Check [claude.com/legal](https://claude.com/legal) and your account privacy settings for current terms.
+
+So the honest framing is: **your data lives on your disk, you control what ends up in the files Claude reads, and no third party other than Anthropic is in the loop**. That's a meaningfully different posture than a typical finance SaaS, but it is not "your data never touches a server."
 
 ## Threat model
 
@@ -11,7 +15,7 @@ The realistic risks when running personal finance tools locally:
 1. **Accidentally committing real data to Git.** You fill out a template, forget to move it outside the repo, and push.
 2. **Leaked credentials.** An API key, session cookie, or password ends up in a config file.
 3. **Leaked account identifiers.** Statements, transaction exports, or "ending in 1234" strings slip into commits.
-4. **Oversharing with Claude.** You paste raw bank statements into a conversation that syncs to Anthropic servers.
+4. **Oversharing with Claude.** All Claude conversations transmit their contents to Anthropic for processing. Pasting a raw statement (with account numbers, routing numbers, statement images) puts those identifiers into a conversation log. Categorized transactions and round-number balances are a very different risk profile than raw statements — be deliberate about the difference.
 
 Each is addressed below.
 
@@ -58,7 +62,8 @@ No skill in this repo accepts a password or API key. The `update-financials` ski
 ## Recommendations for users
 
 - **Keep your filled-in memory files outside the repo.** The Quickstart puts them in `~/finance-data/` or similar. Don't move them back in "just to edit them."
-- **Don't paste raw statements into Claude.** Let the `update-financials` skill read from your local JSON files instead; Claude sees only the summarized output.
+- **Don't paste raw statements into Claude.** Let the `update-financials` skill read from your local JSON/CSV files instead; that way Claude works from the categorized summaries you control, not statement PDFs with account numbers in the header.
+- **Remember conversations are transmitted.** Everything you type to Claude, and every file Claude reads on your behalf during a conversation, goes to Anthropic. That's how the model answers. Don't put anything in a memory file — or a Claude prompt — that you wouldn't be comfortable with Anthropic processing under their retention/training policy.
 - **Review your `~/.claude/settings.json`** before sharing. If you added project-specific env vars or paths, strip anything personal before committing to a public dotfiles repo.
 - **Rotate session cookies** if a scraper profile directory ends up somewhere public.
 
@@ -70,5 +75,5 @@ If you find a security issue in the repo — a regex gap in `.gitleaks.toml`, a 
 
 - Malware on your machine. If your laptop is compromised, local files are compromised.
 - Cloud-synced home directories. If `~/finance-data/` is inside a OneDrive/Dropbox/iCloud folder, your data is in that cloud. That's your choice, not this repo's.
-- Your own mistakes in Claude Code conversations. Transcripts may be logged by Anthropic per their policy. Read it.
+- Anthropic processing your conversations. By design, Claude Code transmits file contents to Anthropic so the model can reason about them. Transcripts are logged per Anthropic's policy. Read it. This repo cannot change that — only your choice of what to put in the files changes it.
 - Unencrypted disk. Turn on FileVault / BitLocker.

@@ -2,7 +2,9 @@
 
 **Run your family's finances the way a startup runs its books — with Claude Code as your CFO.**
 
-Most personal finance tools want you to log in every week and scroll their charts. homeCFO flips the model. Your data lives on your machine. Your Claude Code session knows your full financial picture. You ask questions, get context-aware analysis, and update your memory files as life changes.
+Most personal finance tools want you to log in every week and scroll their charts. homeCFO flips the model. Your data is stored on your machine — no SaaS account, no server-side database holding your numbers between sessions. Your Claude Code session knows your full financial picture. You ask questions, get context-aware analysis, and update your memory files as life changes.
+
+When you ask Claude a question, the relevant file contents are transmitted to Anthropic as part of that conversation (same as any Claude Code session) and are subject to Anthropic's retention and training policies. See [SECURITY.md](SECURITY.md) for the honest version of the privacy story.
 
 ---
 
@@ -17,9 +19,9 @@ Most personal finance tools want you to log in every week and scroll their chart
 
 ## What You Don't Get
 
-- A web app, a SaaS subscription, or a server storing your transactions
+- A web app, a SaaS subscription, or a server storing your transactions between sessions
 - Affiliate links, robo-advisor upsells, or "premium tier" walls
-- Any data leaving your machine, ever
+- A third-party aggregator holding your credentials or scraping on your behalf
 
 ## Two ways in
 
@@ -126,11 +128,11 @@ v0.1 is deliberately small. Likely directions for v0.2+ — order will follow wh
 - **More templates**: `equity_grants`, `rentals`, `tax_plan`, `business_income`
 - **Cross-platform Quickstart**: Linux/macOS-native instructions alongside the current Windows + PowerShell paths
 
-The hard line stays the same: anything that sends data off your machine is opt-in, documented, and never the default.
+The hard line stays the same: anything that sends data to a **third party other than Anthropic** (aggregators, analytics, affiliate trackers) is opt-in, documented, and never the default. Claude itself is always in the loop — that's the whole tool.
 
 ## Security
 
-Your financial data never leaves your machine. The `.gitignore` blocks all data files from ever entering Git. Pre-commit hooks scan for leaked account numbers. See [SECURITY.md](SECURITY.md) for the full threat model.
+Your data is stored locally — no SaaS, no server-side database, no third-party aggregator. The `.gitignore` blocks all data files from ever entering Git, and pre-commit hooks scan for leaked account numbers. Note that when you talk to Claude, file contents are transmitted to Anthropic for the conversation to work, subject to Anthropic's retention and training policies. See [SECURITY.md](SECURITY.md) for the full threat model and the honest version of what "local-first" does and doesn't buy you.
 
 ## Philosophy
 
