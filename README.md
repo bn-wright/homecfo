@@ -63,7 +63,7 @@ Now open Claude Code and ask:
 
 - *"How are we doing financially?"*
 - *"Am I on track to retire at 50?"*
-- *"I just spent $2,000 on a couch. Does that matter?"*
+- *"I just spent $10,000 on a couch. Does that matter?"*
 
 ## Bringing in transaction data
 
