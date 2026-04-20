@@ -8,6 +8,10 @@ What this does NOT mean: that Anthropic never sees your numbers. When you ask Cl
 
 So the honest framing is: **your data lives on your disk, you control what ends up in the files Claude reads, and no third party other than Anthropic is in the loop**. That's a meaningfully different posture than a typical finance SaaS, but it is not "your data never touches a server."
 
+### If you want zero-cloud AI for finance
+
+homeCFO makes a deliberate tradeoff: it uses Claude, so Anthropic sees your conversations, and in exchange you get frontier-grade reasoning that local open-weights models can't yet match. If that tradeoff is wrong for you, check out **[NumbyAI](https://news.ycombinator.com/item?id=47377333)** — it runs a fully local LLM via Ollama, so nothing leaves your machine. You'll get less capable reasoning, but the privacy posture is genuinely end-to-end local. Pick the constraint that matters more for your situation.
+
 ## Threat model
 
 The realistic risks when running personal finance tools locally:

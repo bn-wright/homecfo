@@ -1,8 +1,8 @@
 # homeCFO
 
-**Run your family's finances the way a startup runs its books — with Claude Code as your CFO.**
+**A FIRE skill pack for Claude Code. Project your FI date, reframe spending anxiety against the long-term picture, and run honest quarterly reviews — all against files on your disk.**
 
-Most personal finance tools want you to log in every week and scroll their charts. homeCFO flips the model. Your data is stored on your machine — no SaaS account, no server-side database holding your numbers between sessions. Your Claude Code session knows your full financial picture. You ask questions, get context-aware analysis, and update your memory files as life changes.
+Your data is stored on your machine — no SaaS account, no third-party aggregator, no server-side database holding your numbers between sessions. Your Claude Code session reads the files, runs the math, and tells you honestly whether something matters.
 
 When you ask Claude a question, the relevant file contents are transmitted to Anthropic as part of that conversation (same as any Claude Code session) and are subject to Anthropic's retention and training policies. See [SECURITY.md](SECURITY.md) for the honest version of the privacy story.
 
@@ -10,12 +10,11 @@ When you ask Claude a question, the relevant file contents are transmitted to An
 
 ## What You Get
 
-- **Claude skills** that know your numbers:
-  - [`finance-perspective`](skills/finance-perspective/SKILL.md) — frames short-term concerns against long-term goals
-  - [`update-financials`](skills/update-financials/SKILL.md) — merges new transaction data into your memory files
-  - [`fi-date-projection`](skills/fi-date-projection/SKILL.md) — recalculates your financial-independence date with current portfolio
+- **The headliner skill — [`finance-perspective`](skills/finance-perspective/SKILL.md).** When you're spinning about a $10k couch or a 4% market dip, it computes three numbers: one month of portfolio drift, your locked-in annual savings, and the FI-date impact in days. Then it gives a verdict — *noise*, *absorbable*, or *worth attention* — with the math shown. No moralizing, no "have you considered YNAB." This is the skill I couldn't find anywhere else and the reason this repo exists.
+- **[`fi-date-projection`](skills/fi-date-projection/SKILL.md)** — recalculates your financial-independence date from current portfolio, contribution rate, and target. Three sensitivity bands (5% / 7% / 9% return) every time, so you see the cone of uncertainty instead of a single false-precision number.
+- **[`update-financials`](skills/update-financials/SKILL.md)** — ingests CSV exports (Empower, Mint, Monarch, raw bank) or JSON from your own scraper. Flexible column mapping, no hard-coded schema, asks before guessing.
 - **Memory templates** — sanitized Markdown files you fill in once with your household's profile, investments, retirement targets, and spending baseline. Claude reads them every session.
-- **A philosophy** — treat your family finances like a company, with quarterly reviews, KPIs, and a CFO on call. See [PHILOSOPHY.md](PHILOSOPHY.md).
+- **A quarterly-review workflow** — see [`examples/quarterly-review-walkthrough.md`](examples/quarterly-review-walkthrough.md) for what a 10-minute FIRE check-in looks like end-to-end.
 
 ## What You Don't Get
 
@@ -23,13 +22,23 @@ When you ask Claude a question, the relevant file contents are transmitted to An
 - Affiliate links, robo-advisor upsells, or "premium tier" walls
 - A third-party aggregator holding your credentials or scraping on your behalf
 
+## How this differs from other Claude + finance projects
+
+There's real prior art here. If you're shopping the space, look at these first:
+
+- **[Show HN: Use Codex/Claude Code as your personal financial assistant](https://news.ycombinator.com/item?id=47232547)** — same shape (coding-agent CLI + local files). homeCFO is a packaged skill set rather than a free-form prompt project, and is FIRE-specific rather than general budgeting.
+- **[Claude-Budget-Workspace-Template](https://github.com/danielrosehill/Claude-Budget-Workspace-Template)** — household-budget workspace for Claude Code, closest sibling. homeCFO ships skills (with `SKILL.md` + YAML frontmatter per Anthropic's conventions) instead of agents/slash-commands, and focuses on FI-date projection and spending-perspective reframing rather than general budget management.
+- **[charlie-cfo-skill](https://github.com/EveryInc/charlie-cfo-skill)** — Claude skill for **startup** CFO workflows (cash mgmt, unit economics, fundraising). homeCFO is a **household** CFO — FI dates, not burn rates.
+- **[NumbyAI](https://news.ycombinator.com/item?id=47377333)** — runs a fully local LLM (Ollama) on your machine; nothing goes to the cloud. That's a cleaner privacy story than homeCFO. The tradeoff: you're reasoning with an open-weights local model, not Claude. If zero-cloud matters more than reasoning quality, start there.
+- **[anthropics/financial-services-plugins](https://github.com/anthropics/financial-services-plugins)** — Anthropic's official skills for institutional finance (investment banking, equity research, wealth management). Different audience entirely; homeCFO is for a household, not a desk.
+
+The wedge: I couldn't find anyone else shipping a **spending-anxiety-reframing skill** or **FI-date projection** with sensitivity bands as first-class features. That's what this repo bets on.
+
 ## Two ways in
 
-**Lite (5 minutes, no install):** copy [`FINANCE.template.md`](FINANCE.template.md) into any folder, rename it `FINANCE.md`, fill in the "ABOUT YOU" section at the top, drop your transaction CSV in the same folder, and open Claude Code in that folder. That's it. One self-contained file replaces the skills + templates dance.
+**Lite (5 minutes, no install) — start here:** copy [`FINANCE.template.md`](FINANCE.template.md) into any folder, rename it `FINANCE.md`, fill in the "ABOUT YOU" section at the top, drop your transaction CSV in the same folder, and open Claude Code in that folder. That's it. One self-contained file replaces the skills + templates dance. Most people should stop here.
 
-**Full (10 minutes, what's below):** install the three skills into your global Claude config, set up five separate memory templates in a private data directory, point Claude at them via `~/.claude/CLAUDE.md`. More setup, more power — best if you want different memory for different households or more specialized skills over time.
-
-If you're not sure, start Lite. You can graduate later.
+**Full (10 minutes, for power users):** install the three skills into your global Claude config, set up five separate memory templates in a private data directory, point Claude at them via `~/.claude/CLAUDE.md`. More setup, more power — best if you want different memory for different households, more specialized skills over time, or you find yourself copying `FINANCE.md` between multiple folders.
 
 ## Quickstart — Full setup (10 Minutes)
 
