@@ -10,21 +10,35 @@ What this is:
 How to use it (5 minutes):
   1. Save this file as `FINANCE.md` in any folder on your computer.
      (Recommended: a folder NOT synced to OneDrive/Dropbox/iCloud.)
-  2. Export your transactions from Empower (or Mint, Monarch, your bank) as CSV.
-     Save the CSV in the SAME folder. Name doesn't matter — `transactions.csv`,
-     `empower-export-2026.csv`, anything.
+  2. Pick ONE way to get your data in — you don't need both:
+
+     Option A (easier, hosted): Install the Truthifi MCP server so Claude can
+       pull balances and transactions directly every session. One-time setup:
+       sign up at truthifi.com, link your accounts, run the install command
+       they give you (looks like `claude mcp add truthifi ...`). See
+       docs/integrations/truthifi.md in the homecfo repo for the full guide.
+       Then set DATA SOURCE below to "truthifi".
+
+     Option B (most private, manual): Export your transactions from Empower
+       (or Mint, Monarch, your bank) as CSV. Save the CSV in the SAME folder
+       as this file. Name doesn't matter — `transactions.csv`,
+       `empower-export-2026.csv`, anything. Then set DATA SOURCE below to
+       "csv".
+
   3. Open Claude Code in that folder:    cd path/to/folder && claude
   4. Fill in the "ABOUT YOU" section below with your real numbers.
   5. Ask Claude things like:
         "How are we doing?"
         "Am I on track for my target?"
         "I just spent $3,000 on a couch. Does it matter?"
-        "Update my spending — there's a fresh CSV in this folder."
+        "Sync latest from Truthifi."   (Option A)
+        "Update my spending — there's a fresh CSV in this folder."  (Option B)
 
 What you do NOT need:
   - To install any skills
   - To create five separate template files
-  - To touch your global Claude settings
+  - To touch your global Claude settings (other than installing Truthifi MCP
+    once if you picked Option A)
   - Any technical setup beyond "save file, open Claude"
 
 =============================================================================
@@ -55,6 +69,11 @@ Specifically:
   - Once a conversation ends and is deleted, the data is no longer
     accessible to you — but operational logs may persist on Anthropic's
     side for a period defined by their retention policy.
+  - If you chose Option A (Truthifi), your data ALSO lives with Truthifi —
+    they hold the credentials that sync your accounts. That's a hosted
+    aggregator tradeoff, same as Empower/Monarch/Copilot. Check
+    truthifi.com/privacy for their terms. If you want zero third-party
+    aggregators, use Option B (CSV).
 
 Practical guidance:
   - Use Claude Code (this CLI tool) rather than the web/mobile chat. Both
@@ -95,6 +114,11 @@ What does NOT belong in this file or your CSV:
 - **Spouse / partner:** {{Name and age, or "n/a"}}
 - **Kids:** {{Number and ages, or "none"}}
 - **Location:** {{City, state — for cost-of-living context}}
+- **Data source:** {{"truthifi" | "csv" | "both"}}
+  <!-- "truthifi" = Claude should pull from Truthifi MCP when asked for fresh data.
+       "csv" = Claude should parse CSV files in this folder.
+       "both" = Truthifi is primary; CSV is a fallback for accounts Truthifi doesn't cover.
+       If unset, Claude defaults to "csv" and tells you how to switch. -->
 
 ### Income (annual, gross — what you make before taxes)
 
@@ -153,9 +177,17 @@ data.
 ## When the user asks ANY money question
 
 1. Re-read the "ABOUT YOU" section to anchor your numbers.
-2. If the question concerns recent spending, look for CSV files in the current
-   directory (`*.csv`, especially names containing `transaction`, `empower`,
-   `export`, `activity`). Parse them yourself.
+2. Check the **Data source** field. If the question concerns recent spending,
+   balances, or holdings:
+   - If `truthifi` (or `both`): if Truthifi MCP tools are available in this
+     session (look for tool names starting with `mcp__truthifi__` or similar),
+     call them to pull fresh data. Use Skill 5 below.
+   - If `csv` (or `both` with no Truthifi tools available): look for CSV files
+     in the current directory (`*.csv`, especially names containing
+     `transaction`, `empower`, `export`, `activity`). Parse them yourself. Use
+     Skill 3 below.
+   - If neither is available, say so honestly and suggest the user pick an
+     option.
 3. Apply the right framing skill below.
 4. Answer in **under 200 words** unless the user asks for depth.
 5. Never moralize. The math is the math.
@@ -247,14 +279,61 @@ After parsing, summarize:
 looks materially different from the file above]
 ```
 
-## Skill 4 — Quarterly review (use when user asks for one)
+## Skill 4 — Truthifi MCP sync (use when Data source is "truthifi" or "both")
+
+Trigger phrases: "sync from truthifi", "pull latest from truthifi", "refresh
+my truthifi data", plus any money question where recent data is needed and
+the user's Data source is truthifi.
+
+**Prerequisite:** Truthifi MCP tools must be available in this session. If
+they're not, stop and tell the user the server isn't connected — don't try to
+substitute CSV data silently.
+
+When triggered, call these Truthifi MCP tools in parallel (they're
+independent):
+
+- `get_accounts` — current balances by account
+- `get_dated_holdings` — investment positions as of today
+- `get_composition` + `get_market_cap_allocation` — asset allocation
+- `get_budget_flows` — recent spending/income activity (use
+  `get_investment_transactions` instead for brokerage-only users)
+- `get_findings` — any warnings Truthifi has flagged (high fees, concentration,
+  etc.)
+
+(Tool names may be namespaced like `mcp__truthifi__get_accounts` depending on
+how the server was registered. Use whatever prefix this session exposes.)
+
+**Do NOT call Truthifi write tools** (e.g. `create_asset_liability`) unless
+the user explicitly asks to add a manual entry.
+
+After parsing, summarize:
+
+```markdown
+## Truthifi sync — {{today's date}}
+
+**Accounts pulled:** N
+**Net worth:** $X ({{± $Δ}} since last sync if known)
+**Top balance moves:** [accounts with >$100 or >1% change]
+**New transactions since last sync:** N
+**Notable:**
+- [Anything Truthifi flagged via get_findings]
+- [Unusual moves worth surfacing]
+**Anything that should change "ABOUT YOU"?** [flag if income, savings rate,
+or target looks materially off]
+```
+
+Honor the **Hard rules** in ABOUT YOU (e.g., skip ESPP deposits, skip
+reimbursements) — Truthifi doesn't know about household-specific exclusions;
+you're the enforcement layer.
+
+## Skill 5 — Quarterly review (use when user asks for one)
 
 Trigger phrases: "quarterly review", "how was last quarter", "give me a
 checkup".
 
-Run all three skills above in sequence:
+Run the ingestion + framing skills in sequence:
 
-1. Ingest the latest CSV
+1. Ingest the latest data (Skill 4 if Truthifi, otherwise Skill 3 for CSV)
 2. Recompute the FI date and compare to last known
 3. Apply perspective to anything in the spending that looks anxiety-inducing
 4. End with one concrete action (or "no action needed").
@@ -262,7 +341,9 @@ Run all three skills above in sequence:
 ## Things to NEVER do
 
 - ❌ Recommend specific stocks, funds, or "you should buy X"
-- ❌ Send any data to any external service
+- ❌ Send data to any service the user has not explicitly opted into. Truthifi
+  MCP (if the user set Data source to "truthifi") is opted-in. Anything else
+  — third-party APIs, analytics, webhooks — is not.
 - ❌ Pretend you're a licensed financial advisor (you're not)
 - ❌ Use vague reassurance like "don't worry about it" without showing the math
 - ❌ Moralize about spending choices
