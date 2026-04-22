@@ -1,19 +1,24 @@
 ---
 name: update-financials
-description: Refresh the user's financial memory files from a local data source (transaction export, scraper output, or CSV) and summarize what changed. Use whenever the user says "update financials", "refresh my data", "sync my accounts", "pull the latest transactions", or asks about recent transactions/balances that may not be in memory yet.
----
+description: Refresh the user's financial memory files from a local CSV or JSON export and summarize what changed. Use whenever the user says "update financials", "refresh my data", "pull the latest transactions", or asks about recent transactions/balances that may not be in memory yet — AND their data source is local files (not Truthifi MCP). If the user is on the Truthifi path, use `sync-truthifi` instead. Do not run both skills in the same session — they will write conflicting data.
 
 # Update Financials
 
-This skill ingests fresh financial data from local files and updates the user's memory files. It does NOT scrape any service directly — that's a tool the user runs separately (and keeps in their own private repo). This skill reads the output.
+This skill ingests fresh financial data from local files and updates the user's memory files. It does NOT log in to or scrape any service directly. The user produces the export some other way (downloaded statement, structured JSON they maintain themselves) and drops it in their data directory; this skill reads it.
+
+If the user has connected the Truthifi MCP server and that's their declared data source, hand off to `sync-truthifi` instead — that skill pulls live data via MCP and supersedes this one for those users.
 
 ## When to use
 
-- "Update my financials"
+- "Update my financials" (when CSV is the data source)
 - "Refresh the data"
-- "What did I spend yesterday?" (when transactions aren't in memory yet)
-- "Sync the latest from [bank/brokerage]"
-- After the user mentions running their own scraper/export
+- "What did I spend yesterday?" (when transactions aren't in memory yet, and Truthifi isn't configured)
+- After the user mentions a fresh export they just dropped in the folder
+
+## When NOT to use
+
+- The user is on the Truthifi path → use `sync-truthifi`
+- Another sync skill already ran in this session → stop, don't double-write
 
 ## What this skill does
 
@@ -28,7 +33,7 @@ This skill ingests fresh financial data from local files and updates the user's 
 
 ## Input formats
 
-The skill must handle both JSON (from a custom scraper) and CSV (from a manual export). Detect by file extension and use the matching path.
+The skill must handle both JSON and CSV. Detect by file extension and use the matching path.
 
 ### JSON path
 
@@ -103,7 +108,8 @@ After parsing, treat the result identically to the JSON path.
 
 ## Anti-patterns
 
-- ❌ Scraping a website directly from this skill (out of scope; legal grey area)
+- ❌ Logging in to or scraping a website directly from this skill (out of scope; most institutions' TOS prohibit it)
 - ❌ Sending data to any external API
+- ❌ Running this skill AND `sync-truthifi` in the same session — they will both write to the same memory files and one will silently lose. Pick the one matching the user's data source.
 - ❌ Rewriting memory files in a way that loses prior structure
 - ✅ Read local files → update local files → tell the user what changed

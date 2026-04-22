@@ -1,11 +1,13 @@
 ---
 name: sync-truthifi
-description: Refresh homeCFO memory files from a registered Truthifi MCP server. Use when the user says "sync from Truthifi", "pull latest from Truthifi", "refresh my Truthifi data", or asks a money question where Truthifi is the configured data source. Do not run alongside update-financials in the same session.
+description: Refresh homeCFO memory files from a registered Truthifi MCP server. Use when the user says "sync from Truthifi", "pull latest from Truthifi", "refresh my Truthifi data", or asks a money question where Truthifi is the configured data source (check the user's `Data source` field in FINANCE.md or `~/finance-data/MEMORY.md`). If the user is on the BYO CSV path instead, use `update-financials`. Do not run both skills in the same session — they write to the same memory files and one will silently lose.
 ---
 
 # Sync Truthifi
 
 Pulls fresh financial data from the Truthifi MCP server and updates the user's memory files. The user does not need to know MCP tool names — this skill wraps them into one workflow.
+
+If the user is NOT on the Truthifi path (their `Data source` is `csv` or no Truthifi MCP server is registered), hand off to `update-financials` instead.
 
 ## Prerequisites — discover Truthifi's tools (do not hardcode)
 

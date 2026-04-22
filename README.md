@@ -12,7 +12,8 @@ When you ask Claude a question, the relevant file contents are transmitted to An
 
 - **The headliner skill — [`finance-perspective`](skills/finance-perspective/SKILL.md).** If you're like me and get stuck obsessing over purchases before you make them, this is the skill that reframes the spiral with logical perspective. When you're spinning about a $10k couch or a 4% market dip, it computes three numbers: one month of portfolio drift, your locked-in annual savings, and the FI-date impact in days. Then it gives a verdict — *noise*, *absorbable*, or *worth attention* — with the math shown. No moralizing. When the math clears a purchase, consider it a proverbial *treat yourself*. This is the skill I couldn't find anywhere else and the reason this repo exists.
 - **[`fi-date-projection`](skills/fi-date-projection/SKILL.md)** — recalculates your financial-independence date from current portfolio, contribution rate, and target. Three sensitivity bands (5% / 7% / 9% return) every time, so you see the cone of uncertainty instead of a single false-precision number.
-- **[`update-financials`](skills/update-financials/SKILL.md)** — ingests CSV exports (Empower, Mint, Monarch, raw bank) or JSON from your own scraper. Flexible column mapping, no hard-coded schema, asks before guessing.
+- **[`update-financials`](skills/update-financials/SKILL.md)** — ingests CSV exports (Empower, Mint, Monarch, raw bank). Flexible column mapping, no hard-coded schema, asks before guessing. Use this if you're on the BYO CSV path.
+- **[`sync-truthifi`](skills/sync-truthifi/SKILL.md)** *(v0.2)* — for users who've connected the [Truthifi](https://truthifi.com) MCP server, refreshes memory files from Truthifi's hosted aggregator instead of local CSVs. Discovers Truthifi's tools dynamically by suffix so it works regardless of how you registered the server. Use this if you're on the Truthifi path.
 - **Memory templates** — sanitized Markdown files you fill in once with your household's profile, investments, retirement targets, and spending baseline. Claude reads them every session.
 - **A quarterly-review workflow** — see [`examples/quarterly-review-walkthrough.md`](examples/quarterly-review-walkthrough.md) for what a 10-minute FIRE check-in looks like end-to-end.
 
@@ -78,21 +79,23 @@ Now open Claude Code and ask:
 
 ## Bringing in transaction data
 
-Three ways in — pick the one that matches your comfort level. Full comparison at [`docs/integrations/`](docs/integrations/README.md).
+Two ways in — pick the one that matches your comfort level. Full comparison at [`docs/integrations/`](docs/integrations/README.md).
 
 ### Option A — Truthifi MCP (easiest, hosted)
 
-If you don't want to deal with CSV exports or scrapers, use [Truthifi](https://truthifi.com) as your aggregator. You link your accounts to them once, install their MCP server, and from then on Claude can ask Truthifi directly for current balances, holdings, and transactions every session. Roughly 10 minutes of setup; tradeoff is that a hosted aggregator also has your data. See [`docs/integrations/truthifi.md`](docs/integrations/truthifi.md) for the step-by-step and the honest privacy picture.
+If you don't want to deal with CSV exports, use [Truthifi](https://truthifi.com) as your aggregator. You link your accounts to them once, install their MCP server, and from then on Claude can ask Truthifi directly for current balances, holdings, and transactions every session. Roughly 10 minutes of setup; tradeoff is that a hosted aggregator also has your data. See [`docs/integrations/truthifi.md`](docs/integrations/truthifi.md) for the step-by-step and the honest privacy picture.
 
-### Option B — Bring your own files (most private)
+### Option B — Bring your own CSV (most private)
 
 Drop any of these into your `~/finance-data/` directory and the `update-financials` skill picks them up:
 
 - `transactions_YYYY.csv` — exported from Empower, Mint, Monarch, or your bank's portal. The skill auto-detects common column-name variants (Date/Transaction Date, Amount/Debit+Credit, Description/Merchant/Payee, etc.). If a column can't be mapped, Claude will ask before guessing.
-- `transactions_YYYY.json` — output from a custom scraper, in `{"transactions": [...]}` shape or a bare array.
-- `accounts_latest.json` — current account balances. Optional; only if your data source provides them. Most CSV exports don't include balances, in which case you update `investments.md` by hand at quarterly reviews.
+- `transactions_YYYY.json` — same shape but in JSON, in case you have a structured export from somewhere. `{"transactions": [...]}` or a bare array.
+- `accounts_latest.json` — current account balances. Optional; only if your export includes them. Most CSV exports don't, in which case you update `investments.md` by hand at quarterly reviews.
 
 The skill normalizes whatever you feed it into a consistent internal shape (negative = money out, positive = money in) before updating memory files.
+
+> **Note on scrapers.** homeCFO doesn't ship or recommend a "bring-your-own-scraper" path against bank portals — most institutions' TOS prohibit it. If you maintain one privately for your own use, the JSON path above will read its output, but we don't document or endorse the pattern.
 
 Claude loads your memory files and gives you a contextual answer.
 
@@ -107,7 +110,7 @@ homecfo/
 ├── CONTRIBUTING.md              # How to add a skill or memory template
 ├── skills/                      # Claude skills (drop into ~/.claude/skills/)
 │   ├── finance-perspective/
-│   ├── update-financials/       # BYO CSV / scraper path
+│   ├── update-financials/       # BYO CSV path
 │   ├── sync-truthifi/           # Truthifi MCP path (v0.2+)
 │   └── fi-date-projection/
 ├── memory-templates/            # Markdown templates (copy into your data dir)
@@ -140,7 +143,7 @@ homecfo/
 
 v0.1 is deliberately small. Likely directions for v0.2+ — order will follow what users actually ask for:
 
-- **Alternative ingestion paths.** v0.1 assumes you bring your own data files. v0.2 ships [Truthifi MCP integration](docs/integrations/truthifi.md) as the first hosted-aggregator path (data leaves your machine in exchange for no scraping). Still open for v0.3+:
+- **Alternative ingestion paths.** v0.1 assumes you bring your own CSV. v0.2 ships [Truthifi MCP integration](docs/integrations/truthifi.md) as the first hosted-aggregator path (one-time MCP install in exchange for no quarterly CSV downloads). Still open for v0.3+:
   - Plaid-backed services via a thin adapter
   - Generic CSV importer with a column-mapping helper
 - **More skills**: `tax-loss-harvest-checker`, `equity-grant-tracker`, `mortgage-vs-invest`, `quarterly-review` (one-shot driver for the example walkthrough)
@@ -161,7 +164,7 @@ Read [PHILOSOPHY.md](PHILOSOPHY.md) for the long version.
 
 ## Contributing
 
-Bug reports, scraper requests, new skills, better memory templates — all welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). The hard rule: **no PR may include real financial data**, even sanitized. Templates only.
+Bug reports, new skills, better memory templates, additional MCP integrations — all welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). The hard rule: **no PR may include real financial data**, even sanitized. Templates only.
 
 ## License
 

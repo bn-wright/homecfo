@@ -10,7 +10,7 @@ So the honest framing is: **your data lives on your disk, you control what ends 
 
 ### If you opt into a hosted MCP aggregator (e.g. Truthifi)
 
-homeCFO supports pulling data from [Truthifi](https://truthifi.com) — a hosted aggregator that exposes your accounts over MCP — as an alternative to CSV/scraper ingestion. This is opt-in and off by default. If you turn it on, the honest picture changes: your data now touches **three** places, not two.
+homeCFO supports pulling data from [Truthifi](https://truthifi.com) — a hosted aggregator that exposes your accounts over MCP — as an alternative to CSV ingestion. This is opt-in and off by default. If you turn it on, the honest picture changes: your data now touches **three** places, not two.
 
 | Destination | Role | Governed by |
 |---|---|---|
@@ -18,11 +18,11 @@ homeCFO supports pulling data from [Truthifi](https://truthifi.com) — a hosted
 | **Anthropic** | Processes every Claude conversation, including data pulled in-session | [Anthropic's retention + training policy](https://claude.com/legal) |
 | **Truthifi** | Holds the credentials that sync your accounts; serves the data to Claude on your behalf | [Truthifi's privacy policy](https://truthifi.com) |
 
-The tradeoff: you get "no scraping, no CSVs, no login friction" in exchange for "one more service has your data." It's the same tradeoff you already made if you use Empower, Monarch, Copilot, or Mint — Truthifi is just focused on the MCP/Claude use case.
+The tradeoff: you get "no CSV downloads, no login friction" in exchange for "one more service has your data." It's the same tradeoff you already made if you use Empower, Monarch, Copilot, or Mint — Truthifi is just focused on the MCP/Claude use case.
 
 **This is the canonical statement of the privacy tradeoff.** The integration docs and setup guides link back here rather than restating it. If the framing in those docs ever drifts from this section, this section wins.
 
-**If this tradeoff isn't acceptable to you**, use the CSV or scraper path instead — both keep data on your disk, with Anthropic as the only external recipient. See [`docs/integrations/README.md`](docs/integrations/README.md) for the picker.
+**If this tradeoff isn't acceptable to you**, use the CSV path instead — it keeps data on your disk, with Anthropic as the only external recipient. See [`docs/integrations/README.md`](docs/integrations/README.md) for the picker.
 
 ### If you want zero-cloud AI for finance
 
@@ -50,7 +50,7 @@ The repo ships with a `.gitignore` that refuses to track:
 - `transactions_*.json`, `accounts_*.json`, `holdings_*.json`
 - `*.csv`, `*.xlsx`, `*.ofx`, `*.qfx` (bank export formats)
 - `.env`, `.env.*`, `credentials*`, `*.key`, `*.pem`
-- `.chrome-profile/`, `.playwright-profile/` (scraper profiles with session cookies)
+- `.chrome-profile/`, `.playwright-profile/` (browser session profiles, in case you have a personal automation tool of your own that creates one)
 
 If you discover an oversight, open a PR against `.gitignore` — don't commit data and rely on deletion.
 
@@ -78,7 +78,7 @@ Files in `memory-templates/` end in `.template.md` and contain only placeholders
 
 ### 4. The repo never handles credentials
 
-No skill in this repo accepts a password or API key. The `update-financials` skill (if you use it) calls a scraper you supply locally; the scraper's credentials live in your OS keychain or a gitignored `.env`, never in the repo.
+No skill in this repo accepts a password or API key. The `update-financials` skill reads local files only — it does not log in to anything. The `sync-truthifi` skill calls Truthifi's MCP server, which Truthifi authenticates separately via the install command on their dashboard; no credentials touch this repo.
 
 ## Recommendations for users
 
@@ -86,7 +86,7 @@ No skill in this repo accepts a password or API key. The `update-financials` ski
 - **Don't paste raw statements into Claude.** Let the `update-financials` skill read from your local JSON/CSV files instead; that way Claude works from the categorized summaries you control, not statement PDFs with account numbers in the header.
 - **Remember conversations are transmitted.** Everything you type to Claude, and every file Claude reads on your behalf during a conversation, goes to Anthropic. That's how the model answers. Don't put anything in a memory file — or a Claude prompt — that you wouldn't be comfortable with Anthropic processing under their retention/training policy.
 - **Review your `~/.claude/settings.json`** before sharing. If you added project-specific env vars or paths, strip anything personal before committing to a public dotfiles repo.
-- **Rotate session cookies** if a scraper profile directory ends up somewhere public.
+- **Don't commit browser session profiles.** If you have a personal automation tool that drops one in this directory, the `.gitignore` blocks the common names — but rotate any session cookies if a profile directory ends up somewhere public.
 
 ## Reporting a vulnerability
 

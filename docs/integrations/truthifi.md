@@ -1,6 +1,6 @@
 # Truthifi MCP setup
 
-**What this is:** the hands-off way to get your financial data into homeCFO, if you're OK with a hosted aggregator. You sign up for [Truthifi](https://truthifi.com), connect your accounts to them once (the way you would with Empower, Monarch, etc.), then register their MCP server with Claude Code. After that, Claude can ask Truthifi for your current balances, holdings, and transactions every time you start a conversation — no CSV downloads, no scrapers.
+**What this is:** the hands-off way to get your financial data into homeCFO, if you're OK with a hosted aggregator. You sign up for [Truthifi](https://truthifi.com), connect your accounts to them once (the way you would with Empower, Monarch, etc.), then register their MCP server with Claude Code. After that, Claude can ask Truthifi for your current balances, holdings, and transactions every time you start a conversation — no quarterly CSV downloads.
 
 **Who this is NOT for:** anyone whose hard requirement is "my financial data never leaves my machine except to Anthropic." Truthifi is a hosted service; by design, they have your data. If that's not acceptable to you, use the [CSV path](README.md) instead.
 
@@ -10,7 +10,7 @@
 
 ## Before you start — the honest privacy picture
 
-When you use this integration, your data touches **three** places: your disk, Anthropic, and Truthifi. That's one more destination than the CSV/scraper path, in exchange for setup convenience.
+When you use this integration, your data touches **three** places: your disk, Anthropic, and Truthifi. That's one more destination than the CSV path, in exchange for setup convenience.
 
 **The canonical statement of this tradeoff lives in [`SECURITY.md`](../../SECURITY.md) → "If you opt into a hosted MCP aggregator".** Read that section before continuing. If the framing here and the framing there ever drift apart, SECURITY.md wins.
 

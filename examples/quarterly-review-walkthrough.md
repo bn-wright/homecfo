@@ -10,6 +10,9 @@ This is what a 30-minute quarterly review looks like with homeCFO. The user, "Sa
 - Target: retire at 50 with $2.5M (today's dollars)
 - Saves $50k/yr via payroll deduction
 - Memory files at `~/finance-data/`
+- **Data source:** quarterly CSV export from their brokerage's "Download Transactions" page — the BYO CSV path. `update-financials` is the skill that ingests this.
+
+> **If you're on the Truthifi path instead**, the walkthrough below is identical except for one step: replace *"Sam runs the `update-financials` skill against the new CSV"* with *"Sam asks Claude to sync from Truthifi"* (which invokes `sync-truthifi`). Everything downstream — the perspective skill, the FI projection, the rebalance call — works the same way because both skills write to the same memory files.
 
 ## The conversation
 
