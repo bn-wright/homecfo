@@ -6,7 +6,23 @@ Your financial data is **stored** on your machine — this repo contains no data
 
 What this does NOT mean: that Anthropic never sees your numbers. When you ask Claude a question, the file contents Claude reads are transmitted to Anthropic as part of that conversation — that's how the model has context to answer. Those conversations are subject to Anthropic's retention and (depending on your account settings) training policies. Check [claude.com/legal](https://claude.com/legal) and your account privacy settings for current terms.
 
-So the honest framing is: **your data lives on your disk, you control what ends up in the files Claude reads, and no third party other than Anthropic is in the loop**. That's a meaningfully different posture than a typical finance SaaS, but it is not "your data never touches a server."
+So the honest framing is: **your data lives on your disk, you control what ends up in the files Claude reads, and no third party other than Anthropic is in the loop** — *unless you opt into a hosted MCP aggregator like Truthifi*, in which case see the next section. That's a meaningfully different posture than a typical finance SaaS, but it is not "your data never touches a server."
+
+### If you opt into a hosted MCP aggregator (e.g. Truthifi)
+
+homeCFO supports pulling data from [Truthifi](https://truthifi.com) — a hosted aggregator that exposes your accounts over MCP — as an alternative to CSV/scraper ingestion. This is opt-in and off by default. If you turn it on, the honest picture changes: your data now touches **three** places, not two.
+
+| Destination | Role | Governed by |
+|---|---|---|
+| **Your disk** | Memory files live here between sessions | You |
+| **Anthropic** | Processes every Claude conversation, including data pulled in-session | [Anthropic's retention + training policy](https://claude.com/legal) |
+| **Truthifi** | Holds the credentials that sync your accounts; serves the data to Claude on your behalf | [Truthifi's privacy policy](https://truthifi.com) |
+
+The tradeoff: you get "no scraping, no CSVs, no login friction" in exchange for "one more service has your data." It's the same tradeoff you already made if you use Empower, Monarch, Copilot, or Mint — Truthifi is just focused on the MCP/Claude use case.
+
+**This is the canonical statement of the privacy tradeoff.** The integration docs and setup guides link back here rather than restating it. If the framing in those docs ever drifts from this section, this section wins.
+
+**If this tradeoff isn't acceptable to you**, use the CSV or scraper path instead — both keep data on your disk, with Anthropic as the only external recipient. See [`docs/integrations/README.md`](docs/integrations/README.md) for the picker.
 
 ### If you want zero-cloud AI for finance
 
@@ -20,6 +36,7 @@ The realistic risks when running personal finance tools locally:
 2. **Leaked credentials.** An API key, session cookie, or password ends up in a config file.
 3. **Leaked account identifiers.** Statements, transaction exports, or "ending in 1234" strings slip into commits.
 4. **Oversharing with Claude.** All Claude conversations transmit their contents to Anthropic for processing. Pasting a raw statement (with account numbers, routing numbers, statement images) puts those identifiers into a conversation log. Categorized transactions and round-number balances are a very different risk profile than raw statements — be deliberate about the difference.
+5. **Trusting a hosted aggregator** (only if you opt into Truthifi or similar). You've delegated account read access to a third party. Their breach becomes your breach. Mitigation: read-only credentials where the institution supports it, strong unique password + 2FA on the aggregator account, and drop the integration if you stop using it.
 
 Each is addressed below.
 

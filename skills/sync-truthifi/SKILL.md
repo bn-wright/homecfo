@@ -1,44 +1,53 @@
 ---
 name: sync-truthifi
-description: Refresh the user's financial memory files by pulling current accounts, holdings, asset allocation, and transactions from the Truthifi MCP server. Use whenever the user says "sync from Truthifi", "pull latest from Truthifi", "update from Truthifi", "refresh my Truthifi data", or asks a money question when Truthifi is their configured data source. This skill replaces update-financials for users on the Truthifi integration path — do NOT run both against the same memory files in one session.
+description: Refresh homeCFO memory files from a registered Truthifi MCP server. Use when the user says "sync from Truthifi", "pull latest from Truthifi", "refresh my Truthifi data", or asks a money question where Truthifi is the configured data source. Do not run alongside update-financials in the same session.
 ---
 
 # Sync Truthifi
 
-Pulls fresh financial data from the Truthifi MCP server and updates the user's homeCFO memory files. The user does not need to know MCP tool names — this skill wraps them into one workflow.
+Pulls fresh financial data from the Truthifi MCP server and updates the user's memory files. The user does not need to know MCP tool names — this skill wraps them into one workflow.
 
-## Prerequisites
+## Prerequisites — discover Truthifi's tools (do not hardcode)
 
-The user must have the Truthifi MCP server installed. Verify by checking whether any `mcp__truthifi__*` tools (or similarly namespaced — the exact prefix depends on how Truthifi was registered) are available in the session.
+Truthifi's MCP tools are registered in Claude Code under a prefix the user chose when they ran their `claude mcp add ...` command (commonly something containing `truthifi`, but it can be anything). The tool **suffixes** — the logical names — are stable; the prefix is not.
 
-**If Truthifi MCP tools aren't available, stop and tell the user:**
+**Step 1: Enumerate Truthifi-like tools in this session.** Look across the available MCP tools for names ending in any of these suffixes:
 
-> "I don't see Truthifi MCP tools in this session. Either the server isn't installed, or it hasn't connected yet. Check with `claude mcp list` — you should see `truthifi` with a connected status. If it's not there, follow the [Truthifi setup guide](../../docs/integrations/truthifi.md)."
+- `get_accounts`
+- `get_dated_holdings`
+- `get_composition`
+- `get_market_cap_allocation`
+- `get_budget_flows` or `get_investment_transactions`
+- `get_findings`
 
-Do NOT try to continue without MCP tools — the skill has nothing to sync from.
+If you find none, STOP. Tell the user:
+
+> "I don't see Truthifi tools in this session. The MCP server isn't connected. Run `claude mcp list` to check — you should see a Truthifi-like entry with a connected status. If it's missing, follow Truthifi's setup docs to register it (start at truthifi.com)."
+
+Do NOT try to continue, fall back to CSV, or invent data. The skill has nothing to sync from.
+
+**Step 2: Remember the prefix for this session** and use it consistently — e.g. if the session exposes `mcp__truthifi__get_accounts`, use `mcp__truthifi__*` for every call below.
 
 ## Step-by-step
 
 ### Step 1 — Pull current state
 
-Call these Truthifi MCP tools in parallel (they're independent):
+Call the discovered tools in parallel (they're independent). Default date range is last 30 days when unspecified; respect whatever the user asked for.
 
-- `get_accounts` — current balances by account
-- `get_dated_holdings` — investment positions as of today
-- `get_composition` — asset allocation by class (stocks / bonds / cash / alternatives)
-- `get_market_cap_allocation` — US vs international, large/mid/small cap
-- `get_budget_flows` — recent spending/income activity (or `get_investment_transactions` for brokerage-only users)
-- `get_findings` — any warnings Truthifi has flagged (high fees, concentration, etc.)
-
-Use whatever date range the user asks for. Default to last 30 days for transactions when unspecified.
+- `*get_accounts` — current balances by account
+- `*get_dated_holdings` — investment positions as of today
+- `*get_composition` — asset allocation by class
+- `*get_market_cap_allocation` — US vs international, cap bands
+- `*get_budget_flows` — recent spending/income (prefer `*get_investment_transactions` for brokerage-only users)
+- `*get_findings` — any warnings Truthifi surfaced
 
 ### Step 2 — Diff against current memory
 
-Before writing anything, compare what came back to what's already in memory:
+Before writing anything, compare what came back to what's in memory:
 
-- **investments.md**: did total net worth move? Which accounts? Surface the deltas.
-- **spending_kb.md**: what transactions are new since the last sync? What's the month-to-date spend?
-- **retirement_snapshot.md**: does the new portfolio value change the FI projection materially? (Only recompute if the delta is >1% — small moves are noise.)
+- `investments.md` — did total net worth move? Which accounts? Surface the deltas.
+- `spending_kb.md` — which transactions are new since the last sync? Month-to-date spend?
+- `retirement_snapshot.md` — does the new portfolio value change the FI projection materially? Only recompute if the delta is >1%.
 
 ### Step 3 — Update memory files
 
@@ -46,20 +55,27 @@ Rewrite only the sections that changed. Preserve:
 
 - User-written comments and annotations
 - Historical data (never delete)
-- Account nicknames (don't replace "Joint Checking" with Truthifi's canonical name if the user already labeled it)
-- The memory file header/frontmatter
+- Account nicknames — don't replace "Joint Checking" with Truthifi's canonical name if the user already labeled it
+- Memory file headers / frontmatter
 
-For `investments.md` specifically, update the "as of" date in the header and the account balances table. Holdings detail is expensive to re-fetch and usually stable day-to-day; only refresh holdings if the user asks or if it's been more than a week since the last full refresh.
+For `investments.md` specifically, update the "as of" date and the account balances table. Holdings detail is expensive to re-fetch and usually stable day-to-day; only refresh holdings if the user asks or if it's been more than a week since the last full refresh.
 
-### Step 4 — Report what changed
+### Step 4 — Handle partial failures honestly
 
-Output format:
+If one of the calls above fails while others succeed, update only the memory sections you got clean data for. Tell the user which ones are stale and why. Do NOT:
+
+- Write empty data over existing memory
+- Invent numbers to fill gaps
+- Retry aggressively (one retry per failed call is plenty)
+
+### Step 5 — Report what changed
 
 ```markdown
 ## Truthifi sync — {{TODAY}}
 
-**Accounts pulled:** N
+**Accounts pulled:** N (of M attempted)
 **Memory files updated:** investments.md, spending_kb.md[, retirement_snapshot.md if recomputed]
+**Stale / not refreshed this sync:** [list any sections that failed and why]
 
 **Balance changes since last sync ({{DATE}}):**
 - [Account]: $X → $Y ({{± $Δ}}, {{± %}})
@@ -68,32 +84,32 @@ Output format:
 **New transactions:** N since {{DATE}}
 - Top 3 by amount:
   - [Date] [Merchant] [Category] $X
-  - ...
 
 **Notable:**
-- [Anything Truthifi flagged via get_findings]
-- [Any unusual balance moves the user should know about]
-- [If an account disappeared or a new one appeared]
+- [Anything surfaced via *get_findings]
+- [Unusual balance moves worth calling out]
+- [Accounts that appeared or disappeared]
 
 **Data now current through:** {{latest transaction date}}
 ```
 
-### Step 5 — Stay ready
+### Step 6 — Stay ready
 
-The user probably wants to follow up with a money question now that data is fresh. Don't prematurely summarize everything — just confirm the sync is done and wait.
+The user probably wants to follow up with a money question now that data is fresh. Don't pre-summarize — confirm the sync is done and wait.
 
 ## Key rules
 
-- **Do not create accounts via MCP.** `create_asset_liability` is a write operation — only call it if the user explicitly asks to add a manual asset (e.g. "add our home equity to Truthifi as $680k").
-- **Do not count Truthifi's "transfers" between the user's own accounts as income or spending.** Truthifi usually marks these; skip them in the spending summary.
-- **Honor Brian's existing rules** (if configured in CLAUDE.md): skip Computershare deposits, skip Concur reimbursements, etc. Truthifi doesn't know about these household-specific exclusions — the skill is the enforcement layer.
-- **If Truthifi returns empty data** (e.g. their sync is down), stop and tell the user. Don't write empty memory files over the existing ones.
-- **Rate limiting.** If multiple Truthifi tool calls fail in a row with rate-limit errors, back off and tell the user — don't spam.
+- **Do not call write tools.** Tool suffixes ending in `create_*`, `update_*`, or `delete_*` (e.g. `*create_asset_liability`) mutate the user's Truthifi account. Only call them if the user explicitly asks to add or modify a manual entry.
+- **Do not count internal transfers as spending or income.** Truthifi usually flags these; skip them in the spending summary.
+- **Honor household-specific exclusions.** If the user's CLAUDE.md or memory files declare rules like "skip Computershare deposits" or "skip Concur reimbursements," apply them here — Truthifi doesn't know about them.
+- **If Truthifi returns empty data across the board**, their sync is likely down. Stop and tell the user. Don't overwrite existing memory with zeros.
+- **Rate limiting.** If multiple tool calls fail with rate-limit errors, back off and tell the user.
 
 ## Anti-patterns
 
+- ❌ Hardcoding `mcp__truthifi__*` — the prefix is user-configurable, discover it per session
 - ❌ Silently overwriting user annotations in memory files
-- ❌ Running this skill AND `update-financials` in the same session (they'll write conflicting data)
-- ❌ Calling MCP write tools (`create_asset_liability`, etc.) without explicit user direction
+- ❌ Running this skill AND `update-financials` in the same session (they will write conflicting data; pick one per session)
+- ❌ Calling MCP write tools without explicit user direction
 - ❌ Reporting every transaction in the summary — surface only what's notable
-- ✅ One sync call → one diff report → wait for the next question
+- ✅ One sync call → one honest diff report (including any partial failures) → wait for the next question

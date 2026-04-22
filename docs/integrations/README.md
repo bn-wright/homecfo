@@ -32,9 +32,6 @@ You can mix and match — e.g. use Truthifi for balances but keep a local CSV fo
 
 ## Privacy note — all paths
 
-All three paths send the data Claude reads into the conversation to Anthropic. That's how Claude works; it's not avoidable with this tool. The difference is **what else** happens to the data:
+All three paths send the data Claude reads into the conversation to Anthropic — that's how Claude works, and it's not avoidable with this tool. The difference is **what else** happens to the data: BYO CSV/scraper keeps everything else on your disk; Truthifi adds a hosted aggregator as a third destination.
 
-- **BYO CSV / scraper**: nothing else. Files stay on your disk between conversations.
-- **Truthifi MCP**: a hosted aggregator also has your data, under their privacy policy, to make the sync work. You get convenience in exchange.
-
-See [SECURITY.md](../../SECURITY.md) for the full threat model.
+**Canonical framing is in [SECURITY.md](../../SECURITY.md).** The "If you opt into a hosted MCP aggregator" section there is the source of truth for the Truthifi tradeoff; this page just points at it.
