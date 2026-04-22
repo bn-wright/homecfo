@@ -5,14 +5,20 @@ All notable changes to homeCFO are documented here. Format follows [Keep a Chang
 ## [Unreleased]
 
 ### Added
+- **Truthifi MCP integration (v0.2 track)** — the most-requested v0.2 feature, shipped as the first hosted-aggregator ingestion path:
+  - `skills/sync-truthifi/SKILL.md` — new skill that wraps Truthifi MCP tools (`get_accounts`, `get_dated_holdings`, `get_composition`, `get_budget_flows`, `get_findings`, etc.) into one refresh workflow. Users never need to learn MCP tool names.
+  - `docs/integrations/truthifi.md` — step-by-step setup guide written for non-technical users: privacy tradeoff up front, copy-paste MCP install command, test prompt, troubleshooting, and a permission-allowlist example to suppress prompts on the common tools.
+  - `docs/integrations/README.md` — ingestion-path picker (BYO CSV vs BYO scraper vs Truthifi MCP) with a decision tree and a privacy comparison table.
+  - README updated with an "Option A / Option B" split under "Bringing in transaction data" so Truthifi is discoverable as the easy path.
 - `FINANCE.template.md` — single-file "Lite" version of homeCFO. Drop one MD into a folder with a CSV, open Claude Code, done. No skill install, no separate templates. Embeds perspective math, FI projection, and CSV ingestion inline.
 - README "Two ways in" section presenting Lite vs Full setup paths
 - README "Bringing in transaction data" section explaining accepted file formats
 - `update-financials` skill now explicitly handles CSV input (Empower-style and lookalikes) with flexible column mapping
-- README Roadmap section flagging v0.2 ingestion paths (Truthifi MCP, Plaid, generic CSV importer)
 
 ### Changed
+- README Roadmap reflects that Truthifi MCP has shipped in v0.2; Plaid adapter and generic CSV importer deferred to v0.3+
 - `update-financials` skill description and "Required inputs" updated to acknowledge both JSON and CSV paths
+- Repo layout in README now includes `skills/sync-truthifi/` and `docs/integrations/`
 
 ## [0.1.0] - 2026-04-19
 

@@ -78,6 +78,14 @@ Now open Claude Code and ask:
 
 ## Bringing in transaction data
 
+Three ways in — pick the one that matches your comfort level. Full comparison at [`docs/integrations/`](docs/integrations/README.md).
+
+### Option A — Truthifi MCP (easiest, hosted)
+
+If you don't want to deal with CSV exports or scrapers, use [Truthifi](https://truthifi.com) as your aggregator. You link your accounts to them once, install their MCP server, and from then on Claude can ask Truthifi directly for current balances, holdings, and transactions every session. Roughly 10 minutes of setup; tradeoff is that a hosted aggregator also has your data. See [`docs/integrations/truthifi.md`](docs/integrations/truthifi.md) for the step-by-step and the honest privacy picture.
+
+### Option B — Bring your own files (most private)
+
 Drop any of these into your `~/finance-data/` directory and the `update-financials` skill picks them up:
 
 - `transactions_YYYY.csv` — exported from Empower, Mint, Monarch, or your bank's portal. The skill auto-detects common column-name variants (Date/Transaction Date, Amount/Debit+Credit, Description/Merchant/Payee, etc.). If a column can't be mapped, Claude will ask before guessing.
@@ -99,7 +107,8 @@ homecfo/
 ├── CONTRIBUTING.md              # How to add a skill or memory template
 ├── skills/                      # Claude skills (drop into ~/.claude/skills/)
 │   ├── finance-perspective/
-│   ├── update-financials/
+│   ├── update-financials/       # BYO CSV / scraper path
+│   ├── sync-truthifi/           # Truthifi MCP path (v0.2+)
 │   └── fi-date-projection/
 ├── memory-templates/            # Markdown templates (copy into your data dir)
 │   ├── MEMORY.template.md       # The index file Claude loads first
@@ -107,6 +116,8 @@ homecfo/
 │   ├── investments.template.md
 │   ├── retirement_snapshot.template.md
 │   └── spending_kb.template.md
+├── docs/
+│   └── integrations/            # Ingestion-path setup guides (Truthifi, etc.)
 └── examples/
     └── quarterly-review-walkthrough.md
 ```
@@ -129,8 +140,7 @@ homecfo/
 
 v0.1 is deliberately small. Likely directions for v0.2+ — order will follow what users actually ask for:
 
-- **Alternative ingestion paths.** v0.1 assumes you bring your own data files (CSV exports, your own scraper, etc.). v0.2 will document optional integrations for users who'd rather wire in an existing aggregator:
-  - [Truthifi](https://truthifi.com) via MCP (hosted; data leaves your machine in exchange for no scraping)
+- **Alternative ingestion paths.** v0.1 assumes you bring your own data files. v0.2 ships [Truthifi MCP integration](docs/integrations/truthifi.md) as the first hosted-aggregator path (data leaves your machine in exchange for no scraping). Still open for v0.3+:
   - Plaid-backed services via a thin adapter
   - Generic CSV importer with a column-mapping helper
 - **More skills**: `tax-loss-harvest-checker`, `equity-grant-tracker`, `mortgage-vs-invest`, `quarterly-review` (one-shot driver for the example walkthrough)
