@@ -12,7 +12,7 @@ When you ask Claude a question, the relevant file contents are transmitted to An
 
 - **The headliner skill — [`finance-perspective`](skills/finance-perspective/SKILL.md).** If you're like me and get stuck obsessing over purchases before you make them, this is the skill that reframes the spiral with logical perspective. When you're spinning about a $10k couch or a 4% market dip, it computes three numbers: one month of portfolio drift, your locked-in annual savings, and the FI-date impact in days. Then it gives a verdict — *noise*, *absorbable*, or *worth attention* — with the math shown. No moralizing. When the math clears a purchase, consider it a proverbial *treat yourself*. This is the skill I couldn't find anywhere else and the reason this repo exists.
 - **[`fi-date-projection`](skills/fi-date-projection/SKILL.md)** — recalculates your financial-independence date from current portfolio, contribution rate, and target. Three sensitivity bands (5% / 7% / 9% return) every time, so you see the cone of uncertainty instead of a single false-precision number.
-- **[`update-financials`](skills/update-financials/SKILL.md)** — ingests CSV exports (Empower, Mint, Monarch, raw bank). Flexible column mapping, no hard-coded schema, asks before guessing. Use this if you're on the BYO CSV path.
+- **[`sync-local`](skills/sync-local/SKILL.md)** — ingests CSV or JSON exports (Empower, Mint, Monarch, raw bank) from files on your disk. Flexible column mapping, no hard-coded schema, asks before guessing. Use this if you're on the BYO CSV path. *(Renamed from `update-financials` in v0.2 to pair with `sync-truthifi`; same behavior.)*
 - **[`sync-truthifi`](skills/sync-truthifi/SKILL.md)** *(v0.2)* — for users who've connected the [Truthifi](https://truthifi.com) MCP server, refreshes memory files from Truthifi's hosted aggregator instead of local CSVs. Discovers Truthifi's tools dynamically by suffix so it works regardless of how you registered the server. Use this if you're on the Truthifi path.
 - **Memory templates** — sanitized Markdown files you fill in once with your household's profile, investments, retirement targets, and spending baseline. Claude reads them every session.
 - **A quarterly-review workflow** — see [`examples/quarterly-review-walkthrough.md`](examples/quarterly-review-walkthrough.md) for what a 10-minute FIRE check-in looks like end-to-end.
@@ -87,7 +87,7 @@ If you don't want to deal with CSV exports, use [Truthifi](https://truthifi.com)
 
 ### Option B — Bring your own CSV (most private)
 
-Drop any of these into your `~/finance-data/` directory and the `update-financials` skill picks them up:
+Drop any of these into your `~/finance-data/` directory and the `sync-local` skill picks them up:
 
 - `transactions_YYYY.csv` — exported from Empower, Mint, Monarch, or your bank's portal. The skill auto-detects common column-name variants (Date/Transaction Date, Amount/Debit+Credit, Description/Merchant/Payee, etc.). If a column can't be mapped, Claude will ask before guessing.
 - `transactions_YYYY.json` — same shape but in JSON, in case you have a structured export from somewhere. `{"transactions": [...]}` or a bare array.
@@ -110,7 +110,7 @@ homecfo/
 ├── CONTRIBUTING.md              # How to add a skill or memory template
 ├── skills/                      # Claude skills (drop into ~/.claude/skills/)
 │   ├── finance-perspective/
-│   ├── update-financials/       # BYO CSV path
+│   ├── sync-local/              # BYO CSV/JSON path (renamed from update-financials in v0.2)
 │   ├── sync-truthifi/           # Truthifi MCP path (v0.2+)
 │   └── fi-date-projection/
 ├── memory-templates/            # Markdown templates (copy into your data dir)
@@ -141,13 +141,11 @@ homecfo/
 
 ## Roadmap
 
-v0.1 is deliberately small. Likely directions for v0.2+ — order will follow what users actually ask for:
+v0.1 is deliberately small. **v0.2 (in progress)** ships [Truthifi MCP integration](docs/integrations/truthifi.md) as the first hosted-aggregator path — one-time MCP install in exchange for no quarterly CSV downloads. Beyond that, direction will follow what users actually ask for. Plausible-but-not-promised future work:
 
-- **Alternative ingestion paths.** v0.1 assumes you bring your own CSV. v0.2 ships [Truthifi MCP integration](docs/integrations/truthifi.md) as the first hosted-aggregator path (one-time MCP install in exchange for no quarterly CSV downloads). Still open for v0.3+:
-  - Plaid-backed services via a thin adapter
-  - Generic CSV importer with a column-mapping helper
-- **More skills**: `tax-loss-harvest-checker`, `equity-grant-tracker`, `mortgage-vs-invest`, `quarterly-review` (one-shot driver for the example walkthrough)
-- **More templates**: `equity_grants`, `rentals`, `tax_plan`, `business_income`
+- **More ingestion paths** if there's demand — e.g. another aggregator MCP, or a column-mapping helper for unusual CSV shapes
+- **More skills** in the same insight-oriented vein
+- **More templates** for situations not yet covered (equity grants, rentals, business income)
 - **Cross-platform Quickstart**: Linux/macOS-native instructions alongside the current Windows + PowerShell paths
 
 The hard line stays the same: anything that sends data to a **third party other than Anthropic** (aggregators, analytics, affiliate trackers) is opt-in, documented, and never the default. Claude itself is always in the loop — that's the whole tool.

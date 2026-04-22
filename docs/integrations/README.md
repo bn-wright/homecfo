@@ -23,7 +23,7 @@ homeCFO is data-agnostic — you pick how your transactions and balances get int
 
 You can mix and match — e.g. use Truthifi for balances but keep a local CSV for older transactions. homeCFO reads whatever is present.
 
-> **A note on scrapers.** Earlier drafts of this doc recommended a "bring-your-own scraper" path (Selenium/Playwright against bank portals). That was removed: most US bank/brokerage TOS prohibit automated browsing of their customer portals, and we don't want to push users toward a category of tool that can get accounts locked. If you already maintain one in your own private repo for personal use, the `update-financials` skill will still read its JSON output — but the path isn't documented or recommended here.
+> **A note on scrapers.** Earlier drafts of this doc recommended a "bring-your-own scraper" path (Selenium/Playwright against bank portals). That was removed: most US bank/brokerage TOS prohibit automated browsing of their customer portals, and we don't want to push users toward a category of tool that can get accounts locked. If you already maintain one in your own private repo for personal use, the `sync-local` skill will still read its JSON output — but the path isn't documented or recommended here.
 
 ## Privacy note — both paths
 

@@ -1,6 +1,6 @@
 <!--
 Pre-parsed transaction data and category baselines.
-The `update-financials` skill appends to this file when it ingests new exports.
+The `sync-local` skill (renamed from `update-financials` in v0.2) appends to this file when it ingests new exports.
 Keep raw transaction CSVs/JSONs OUT of the repo (they are gitignored anyway).
 -->
 

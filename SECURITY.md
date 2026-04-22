@@ -78,12 +78,13 @@ Files in `memory-templates/` end in `.template.md` and contain only placeholders
 
 ### 4. The repo never handles credentials
 
-No skill in this repo accepts a password or API key. The `update-financials` skill reads local files only — it does not log in to anything. The `sync-truthifi` skill calls Truthifi's MCP server, which Truthifi authenticates separately via the install command on their dashboard; no credentials touch this repo.
+No skill in this repo accepts a password or API key. The `sync-local` skill reads local files only — it does not log in to anything. The `sync-truthifi` skill calls Truthifi's MCP server, which Truthifi authenticates separately via the install command on their dashboard; no credentials touch this repo.
 
 ## Recommendations for users
 
+- **Masked account identifiers from aggregators are fine in memory.** Truthifi (and most aggregators) return account numbers already masked — typically the last 4 digits with the rest replaced (e.g. `xxxx6886`). Those are safe to write to memory files; the whole *point* of masking is that they're not enough to access the account on their own. What stays banned: full account numbers, raw routing numbers, and the formatted phrase `Ending in 1234` (which the gitleaks regex catches regardless of source). When in doubt, prefer account *nicknames* (`Joint Checking`) over any number at all.
 - **Keep your filled-in memory files outside the repo.** The Quickstart puts them in `~/finance-data/` or similar. Don't move them back in "just to edit them."
-- **Don't paste raw statements into Claude.** Let the `update-financials` skill read from your local JSON/CSV files instead; that way Claude works from the categorized summaries you control, not statement PDFs with account numbers in the header.
+- **Don't paste raw statements into Claude.** Let the `sync-local` skill read from your local JSON/CSV files instead; that way Claude works from the categorized summaries you control, not statement PDFs with account numbers in the header.
 - **Remember conversations are transmitted.** Everything you type to Claude, and every file Claude reads on your behalf during a conversation, goes to Anthropic. That's how the model answers. Don't put anything in a memory file — or a Claude prompt — that you wouldn't be comfortable with Anthropic processing under their retention/training policy.
 - **Review your `~/.claude/settings.json`** before sharing. If you added project-specific env vars or paths, strip anything personal before committing to a public dotfiles repo.
 - **Don't commit browser session profiles.** If you have a personal automation tool that drops one in this directory, the `.gitignore` blocks the common names — but rotate any session cookies if a profile directory ends up somewhere public.

@@ -1,24 +1,39 @@
 ---
-name: update-financials
-description: Refresh the user's financial memory files from a local CSV or JSON export and summarize what changed. Use whenever the user says "update financials", "refresh my data", "pull the latest transactions", or asks about recent transactions/balances that may not be in memory yet — AND their data source is local files (not Truthifi MCP). If the user is on the Truthifi path, use `sync-truthifi` instead. Do not run both skills in the same session — they will write conflicting data.
+name: sync-local
+description: Refresh homeCFO memory files from local CSV or JSON files the user maintains on their own disk (Empower exports, Mint/Monarch/bank exports, hand-maintained JSON). Use when the user says "update my financials", "refresh my data", "pull the latest transactions", "I just downloaded a new export", or asks about recent transactions/balances that may not be in memory yet — AND their data source is local files. **Routing rule: before running, check the user's `Data source` field (in `MEMORY.md` or `FINANCE.md`). If it's `truthifi`, hand off to `sync-truthifi` instead — that skill pulls from the Truthifi MCP server and supersedes this one for those users.** Do not run both skills in the same session — they write conflicting data to the same memory files.
+---
 
-# Update Financials
+# Sync Local (formerly `update-financials`)
 
 This skill ingests fresh financial data from local files and updates the user's memory files. It does NOT log in to or scrape any service directly. The user produces the export some other way (downloaded statement, structured JSON they maintain themselves) and drops it in their data directory; this skill reads it.
 
-If the user has connected the Truthifi MCP server and that's their declared data source, hand off to `sync-truthifi` instead — that skill pulls live data via MCP and supersedes this one for those users.
+> **Naming note.** This skill was renamed from `update-financials` to `sync-local` in v0.2 to pair cleanly with `sync-truthifi`. Both read the user's declared `Data source`; one pulls from files on disk, one pulls from Truthifi's MCP server. If you see older docs referring to `update-financials`, it's the same skill.
+
+## Routing: check `Data source` first
+
+Before doing anything, look at the user's memory for a `Data source` field:
+
+- **Lite path:** near the top of `FINANCE.md`, inside the `ABOUT YOU` section.
+- **Full path:** at the top of `MEMORY.md` (the index file loaded first).
+
+If the field exists and equals `truthifi`, STOP. Tell the user:
+
+> "You're on the Truthifi path (Data source = truthifi). Use `sync-truthifi` to refresh from the Truthifi MCP server. I won't run `sync-local` here — it would write conflicting data to the same memory files."
+
+Then hand off. Only run this skill if `Data source` is `csv`, absent, or the user has explicitly overridden it this session ("just read the CSV in this folder even though I'm set up for Truthifi").
 
 ## When to use
 
-- "Update my financials" (when CSV is the data source)
+- "Update my financials" (when CSV/JSON is the data source)
 - "Refresh the data"
 - "What did I spend yesterday?" (when transactions aren't in memory yet, and Truthifi isn't configured)
 - After the user mentions a fresh export they just dropped in the folder
 
 ## When NOT to use
 
-- The user is on the Truthifi path → use `sync-truthifi`
-- Another sync skill already ran in this session → stop, don't double-write
+- The user's `Data source = truthifi` → hand off to `sync-truthifi`
+- `sync-truthifi` already ran in this session → stop, don't double-write
+- The user is asking a question that doesn't need fresh data — just answer from memory
 
 ## What this skill does
 
@@ -110,6 +125,7 @@ After parsing, treat the result identically to the JSON path.
 
 - ❌ Logging in to or scraping a website directly from this skill (out of scope; most institutions' TOS prohibit it)
 - ❌ Sending data to any external API
-- ❌ Running this skill AND `sync-truthifi` in the same session — they will both write to the same memory files and one will silently lose. Pick the one matching the user's data source.
+- ❌ Running this skill AND `sync-truthifi` in the same session — they will both write to the same memory files and one will silently lose. Pick the one matching the user's `Data source`.
+- ❌ Ignoring the `Data source` field and defaulting to local-file ingestion for a Truthifi user
 - ❌ Rewriting memory files in a way that loses prior structure
-- ✅ Read local files → update local files → tell the user what changed
+- ✅ Read `Data source` → if `csv`, read local files → update local files → tell the user what changed

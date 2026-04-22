@@ -259,7 +259,7 @@ Data source is "truthifi".
 
 **Prerequisite: discover Truthifi's tools in this session.** The MCP server
 registers tools under a prefix set at install time — in practice it's often a
-random UUID (e.g. `mcp__REDACTED-UUID__get_accounts`),
+random UUID (e.g. `mcp__a1b2c3d4-xxxx-xxxx-xxxx-xxxxxxxxxxxx__get_accounts`),
 not the string `truthifi`. To find the tools without hardcoding, look across
 the available tool names for suffixes matching the logical names below.
 If you can't find any Truthifi-like tools in this session, STOP and tell the

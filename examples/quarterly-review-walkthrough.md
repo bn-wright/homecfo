@@ -10,9 +10,19 @@ This is what a 30-minute quarterly review looks like with homeCFO. The user, "Sa
 - Target: retire at 50 with $2.5M (today's dollars)
 - Saves $50k/yr via payroll deduction
 - Memory files at `~/finance-data/`
-- **Data source:** quarterly CSV export from their brokerage's "Download Transactions" page — the BYO CSV path. `update-financials` is the skill that ingests this.
+- **Data source:** quarterly CSV export from their brokerage's "Download Transactions" page — the BYO CSV path. `sync-local` is the skill that ingests this.
 
-> **If you're on the Truthifi path instead**, the walkthrough below is identical except for one step: replace *"Sam runs the `update-financials` skill against the new CSV"* with *"Sam asks Claude to sync from Truthifi"* (which invokes `sync-truthifi`). Everything downstream — the perspective skill, the FI projection, the rebalance call — works the same way because both skills write to the same memory files.
+> **If you're on the Truthifi path instead**, the walkthrough below is identical except for one step: replace *"Sam runs the `sync-local` skill against the new CSV"* with *"Sam asks Claude to sync from Truthifi"* (which invokes `sync-truthifi`). Everything downstream — the perspective skill, the FI projection, the rebalance call — works the same way because both skills write to the same memory files. See the "Data source" field in [`memory-templates/MEMORY.template.md`](../memory-templates/MEMORY.template.md) — skills read it to pick a path.
+
+### A Truthifi-path quick sync (example)
+
+If Sam were on Truthifi, the start-of-quarter check-in often looks even lighter:
+
+> **Sam:** How are we doing?
+>
+> **Claude:** *(invokes `sync-truthifi`, which sees `Data source: truthifi` and runs a single `get_accounts` call — the cheapest option on the free tier.)* Balances are current as of this morning. Net worth $1,047,500 (+$47,500 since end-of-Q1). I've only used 1 of 5 daily Truthifi calls, so we have room for follow-ups. Want the allocation drift or the spending view?
+
+Same memory files get updated; the user just doesn't have to download anything.
 
 ## The conversation
 

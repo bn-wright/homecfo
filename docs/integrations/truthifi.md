@@ -77,7 +77,7 @@ Open Claude Code in your homeCFO data folder (or the folder with your `FINANCE.m
 
 Claude should:
 
-1. Enumerate the Truthifi MCP tools available in your session (the skill discovers them by name suffix — it doesn't hardcode a prefix; in practice Truthifi uses a random UUID, e.g. `mcp__75542661-...__get_accounts`)
+1. Enumerate the Truthifi MCP tools available in your session (the skill discovers them by name suffix — it doesn't hardcode a prefix; in practice Truthifi uses a random UUID, e.g. `mcp__a1b2c3d4-xxxx-xxxx-xxxx-xxxxxxxxxxxx__get_accounts` — yours will be different)
 2. Call `get_accounts` to pull your current balances (1 tool call out of your daily 5)
 3. Update your memory files (or compute an inline answer if you're on Lite)
 4. Show you a summary — balance deltas since last sync, and "4 Truthifi calls remaining today"
