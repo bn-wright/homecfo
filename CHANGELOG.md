@@ -13,6 +13,14 @@ All notable changes to homeCFO are documented here. Format follows [Keep a Chang
   - `SECURITY.md` now contains the canonical statement of the Truthifi privacy tradeoff (three data destinations: disk, Anthropic, Truthifi). Integration docs, the Lite template, and the README all link back to it rather than restating the framing — single source of truth.
   - README updated with an "Option A / Option B" split under "Bringing in transaction data" so Truthifi is discoverable as the easy path.
 
+### Changed (free-tier-first refactor of sync-truthifi)
+- **`sync-truthifi` now defaults to balances-only (1 tool call).** The prior design called all six read tools in a priority-ordered parallel batch — fine on paid Truthifi tiers, but the free tier caps at 5 calls/day, which meant a single "sync" burned the daily budget and every follow-up question got rate-limited. The skill now has three explicit modes:
+  - **Mode A (default, 1 call):** `get_accounts` only. Balances. Right answer for 90% of routine questions ("how are we doing?", "am I on track?").
+  - **Mode B (1 call each, on demand):** a specific question that needs data balances can't answer (spending, allocation, holdings) triggers the one relevant tool. Narrate remaining daily budget when it gets tight.
+  - **Mode C (up to 6 calls, opt-in only):** full refresh / quarterly-review. Warn up front that this exceeds the free-tier daily limit and wait for explicit confirmation before issuing.
+- Skill now documents six API gotchas observed against the live Truthifi MCP (required `include` array, empty-but-valid `{"output": []}` responses, `get_market_cap_allocation` single-date-snapshot quirk, `maxAvailableDateRange` often null, 90-day window needed for holdings/composition, rate-limit errors are terminal — never retry).
+- Corresponding updates in the Lite template's inline Skill 4 and in `docs/integrations/truthifi.md` so Lite users and new-setup users get the same free-tier-safe behavior and the same honest picture of daily call-budget tradeoffs.
+
 ### Removed
 - **Bring-your-own-scraper as a recommended/documented path.** Earlier drafts of `docs/integrations/README.md` pitched a Selenium/Playwright path against bank portals as a third ingestion option. Most US bank/brokerage TOS prohibit automated browsing of customer portals; we don't want to push users toward a category of tool that can get accounts locked, and we don't want to maintain one either. The `update-financials` skill still reads JSON if someone maintains a scraper privately, but the pattern isn't documented, endorsed, or supported here. The `CONTRIBUTING.md` "out of scope" list and the `SECURITY.md` threat model were updated to match.
 

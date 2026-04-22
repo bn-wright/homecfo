@@ -258,21 +258,51 @@ my truthifi data", plus any money question that needs recent data when
 Data source is "truthifi".
 
 **Prerequisite: discover Truthifi's tools in this session.** The MCP server
-registers tools under a prefix set at install time (commonly something like
-`mcp__truthifi__*`, but the real prefix depends on the name the user gave the
-server when they ran `claude mcp add`). To find the tools without hardcoding,
-look across the available tool names for suffixes matching the logical names
-below. If you can't find any Truthifi-like tools in this session, STOP and
-tell the user the Truthifi MCP isn't connected. Do not fall back to CSV.
+registers tools under a prefix set at install time — in practice it's often a
+random UUID (e.g. `mcp__REDACTED-UUID__get_accounts`),
+not the string `truthifi`. To find the tools without hardcoding, look across
+the available tool names for suffixes matching the logical names below.
+If you can't find any Truthifi-like tools in this session, STOP and tell the
+user the Truthifi MCP isn't connected. Do not fall back to CSV.
 
-Call these logical tools in parallel (they're independent). Match by suffix:
+**Every Truthifi read tool requires an `include: [...]` array** listing the
+outer-level fields you want back. Without it, the call errors. Pass the full
+outer-field list from the tool's schema unless you have a reason to narrow it.
 
-- `*get_accounts` — current balances by account
-- `*get_dated_holdings` — investment positions as of today
-- `*get_composition` and `*get_market_cap_allocation` — asset allocation
-- `*get_budget_flows` — recent spending/income (use `*get_investment_transactions`
-  instead for brokerage-only users)
-- `*get_findings` — any warnings Truthifi has flagged
+**Free-tier rate limit: 5 tool calls per day, reset at midnight ET.** This
+shapes the whole skill. Burning all 5 on one "refresh everything" run means
+every later question in the same day gets rate-limited. So:
+
+**Default sync = `*get_accounts` only (1 call).** That's balances, which is
+what almost every routine question needs. Leaves 4 calls for follow-ups.
+Do NOT call more tools on a default sync unless the user asked for something
+else by name.
+
+**Targeted follow-ups (1 call each) when a later question needs data
+balances can't answer:**
+
+| Question | Call |
+|---|---|
+| "What did I spend this week / MTD / on groceries?" | `*get_budget_flows` (or `*get_investment_transactions` for brokerage-only), 30-day window |
+| "What's my asset allocation?" | `*get_composition`, 90-day window |
+| "US vs international?" / "Cap concentration?" | `*get_market_cap_allocation`, today's date (retry earlier if no snapshot) |
+| "Show my holdings." | `*get_dated_holdings`, 90-day window |
+| "Any warnings Truthifi flagged?" | `*get_findings` |
+
+Narrate spend if it's getting tight: *"This uses 1 of your remaining 2
+Truthifi calls today."*
+
+**Full refresh (up to 6 calls)** only if the user explicitly asks for it
+("do a full refresh", "quarterly review", "pull everything"). Before
+issuing, warn them: *"A full refresh uses up to 6 calls; free-tier daily
+limit is 5 so `get_findings` will likely be rate-limited. Proceed?"* and
+wait for confirmation. Then call in priority order (`get_accounts`,
+`get_budget_flows`, `get_dated_holdings`, `get_composition`,
+`get_market_cap_allocation`, `get_findings`) in a single parallel batch.
+
+**Date-window defaults:** transactions = 30 days, holdings/composition =
+90 days (Truthifi doesn't snapshot daily, so 30 is often empty),
+market-cap = single date (today; retry earlier if needed).
 
 If Truthifi's actual tool names drift from this list, enumerate what IS
 exposed and use the closest reasonable matches. Don't invent data.
@@ -281,9 +311,14 @@ exposed and use the closest reasonable matches. Don't invent data.
 `*delete_*`, e.g. `*create_asset_liability`) unless the user explicitly asks
 to add or modify a manual entry.
 
-**Partial-failure handling.** If one of the calls above fails while others
-succeed, update only the sections you got clean data for and tell the user
-which ones are stale. Don't write empty memory or invent numbers.
+**Partial-failure handling.** If a call returns a rate-limit error, stop
+issuing new calls and report what landed — do NOT retry (resets midnight ET,
+retries just burn tomorrow's budget). If a call returns `{"output": []}`
+that is NOT an error — it means "no data in the requested window," valid
+answer. Only treat explicit errors (rate limit, HTTP error, "no matching
+records found") as failures. Update only the sections you got clean data
+for and tell the user which ones are stale. Don't write empty memory or
+invent numbers.
 
 After parsing, summarize:
 
