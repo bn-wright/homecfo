@@ -141,7 +141,7 @@ homecfo/
 
 ## Roadmap
 
-v0.1 is deliberately small. **v0.2 (in progress)** ships [Truthifi MCP integration](docs/integrations/truthifi.md) as the first hosted-aggregator path — one-time MCP install in exchange for no quarterly CSV downloads. Beyond that, direction will follow what users actually ask for. Plausible-but-not-promised future work:
+v0.1 was deliberately small. **v0.2 (shipped 2026-04)** added [Truthifi MCP integration](docs/integrations/truthifi.md) as the first hosted-aggregator path — one-time MCP install in exchange for no quarterly CSV downloads — and renamed `update-financials` → `sync-local` so the two ingestion skills pair cleanly. Beyond that, direction will follow what users actually ask for. Plausible-but-not-promised future work:
 
 - **More ingestion paths** if there's demand — e.g. another aggregator MCP, or a column-mapping helper for unusual CSV shapes
 - **More skills** in the same insight-oriented vein
