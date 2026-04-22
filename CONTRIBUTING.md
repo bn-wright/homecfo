@@ -13,15 +13,16 @@ If you're unsure whether something counts as "real data," it does. Use placehold
 - New Claude skills under `skills/` that match the repo's philosophy (insight-oriented, operator-mindset, no daily-checking pattern)
 - Improvements to existing skills (clearer prompts, better edge-case handling)
 - Memory templates for situations not yet covered (e.g., `business_income.template.md`, `equity_grants.template.md`)
+- New ingestion paths via **user-opted-in MCP servers** (Truthifi-style) — documented under `docs/integrations/`, off by default, with the privacy tradeoff stated up front
 - Documentation: clarifying the philosophy, fixing typos, expanding the Quickstart for other OSes
 - Pre-commit / `.gitleaks.toml` improvements that catch more leak patterns
 
 ## What's out of scope
 
-- Anything that sends data to a third party
-- Anything that requires an account, API key, or paid service to function
-- "Premium" tiers, affiliate links, referral codes
-- Scrapers for specific banks/brokerages (legal grey area — keep those in your own private repo)
+- Anything that sends data to a third party **by default** (opt-in MCP integrations are fine; silent telemetry is not)
+- Anything that requires an account, API key, or paid service to *function at all* (paid tiers of optional integrations are fine if the rest of the repo still works without them)
+- "Premium" tiers in this repo, affiliate links, referral codes
+- Scrapers that automate logged-in bank/brokerage portals (most US institutions' TOS prohibit this; we don't want to push users into a category of tool that can get accounts locked, and we don't want to maintain one — keep those in your own private repo)
 - Specific investment recommendations or "this asset is good" content (this is a tooling repo, not advice)
 
 ## Workflow

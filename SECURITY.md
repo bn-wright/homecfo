@@ -6,7 +6,23 @@ Your financial data is **stored** on your machine — this repo contains no data
 
 What this does NOT mean: that Anthropic never sees your numbers. When you ask Claude a question, the file contents Claude reads are transmitted to Anthropic as part of that conversation — that's how the model has context to answer. Those conversations are subject to Anthropic's retention and (depending on your account settings) training policies. Check [claude.com/legal](https://claude.com/legal) and your account privacy settings for current terms.
 
-So the honest framing is: **your data lives on your disk, you control what ends up in the files Claude reads, and no third party other than Anthropic is in the loop**. That's a meaningfully different posture than a typical finance SaaS, but it is not "your data never touches a server."
+So the honest framing is: **your data lives on your disk, you control what ends up in the files Claude reads, and no third party other than Anthropic is in the loop** — *unless you opt into a hosted MCP aggregator like Truthifi*, in which case see the next section. That's a meaningfully different posture than a typical finance SaaS, but it is not "your data never touches a server."
+
+### If you opt into a hosted MCP aggregator (e.g. Truthifi)
+
+homeCFO supports pulling data from [Truthifi](https://truthifi.com) — a hosted aggregator that exposes your accounts over MCP — as an alternative to CSV ingestion. This is opt-in and off by default. If you turn it on, the honest picture changes: your data now touches **three** places, not two.
+
+| Destination | Role | Governed by |
+|---|---|---|
+| **Your disk** | Memory files live here between sessions | You |
+| **Anthropic** | Processes every Claude conversation, including data pulled in-session | [Anthropic's retention + training policy](https://claude.com/legal) |
+| **Truthifi** | Holds the credentials that sync your accounts; serves the data to Claude on your behalf | [Truthifi's privacy policy](https://truthifi.com) |
+
+The tradeoff: you get "no CSV downloads, no login friction" in exchange for "one more service has your data." It's the same tradeoff you already made if you use Empower, Monarch, Copilot, or Mint — Truthifi is just focused on the MCP/Claude use case.
+
+**This is the canonical statement of the privacy tradeoff.** The integration docs and setup guides link back here rather than restating it. If the framing in those docs ever drifts from this section, this section wins.
+
+**If this tradeoff isn't acceptable to you**, use the CSV path instead — it keeps data on your disk, with Anthropic as the only external recipient. See [`docs/integrations/README.md`](docs/integrations/README.md) for the picker.
 
 ### If you want zero-cloud AI for finance
 
@@ -20,6 +36,7 @@ The realistic risks when running personal finance tools locally:
 2. **Leaked credentials.** An API key, session cookie, or password ends up in a config file.
 3. **Leaked account identifiers.** Statements, transaction exports, or "ending in 1234" strings slip into commits.
 4. **Oversharing with Claude.** All Claude conversations transmit their contents to Anthropic for processing. Pasting a raw statement (with account numbers, routing numbers, statement images) puts those identifiers into a conversation log. Categorized transactions and round-number balances are a very different risk profile than raw statements — be deliberate about the difference.
+5. **Trusting a hosted aggregator** (only if you opt into Truthifi or similar). You've delegated account read access to a third party. Their breach becomes your breach. Mitigation: read-only credentials where the institution supports it, strong unique password + 2FA on the aggregator account, and drop the integration if you stop using it.
 
 Each is addressed below.
 
@@ -33,7 +50,7 @@ The repo ships with a `.gitignore` that refuses to track:
 - `transactions_*.json`, `accounts_*.json`, `holdings_*.json`
 - `*.csv`, `*.xlsx`, `*.ofx`, `*.qfx` (bank export formats)
 - `.env`, `.env.*`, `credentials*`, `*.key`, `*.pem`
-- `.chrome-profile/`, `.playwright-profile/` (scraper profiles with session cookies)
+- `.chrome-profile/`, `.playwright-profile/` (browser session profiles, in case you have a personal automation tool of your own that creates one)
 
 If you discover an oversight, open a PR against `.gitignore` — don't commit data and rely on deletion.
 
@@ -61,15 +78,16 @@ Files in `memory-templates/` end in `.template.md` and contain only placeholders
 
 ### 4. The repo never handles credentials
 
-No skill in this repo accepts a password or API key. The `update-financials` skill (if you use it) calls a scraper you supply locally; the scraper's credentials live in your OS keychain or a gitignored `.env`, never in the repo.
+No skill in this repo accepts a password or API key. The `sync-local` skill reads local files only — it does not log in to anything. The `sync-truthifi` skill calls Truthifi's MCP server, which Truthifi authenticates separately via the install command on their dashboard; no credentials touch this repo.
 
 ## Recommendations for users
 
+- **Masked account identifiers from aggregators are fine in memory.** Truthifi (and most aggregators) return account numbers already masked — typically the last 4 digits with the rest replaced (e.g. `xxxx6886`). Those are safe to write to memory files; the whole *point* of masking is that they're not enough to access the account on their own. What stays banned: full account numbers, raw routing numbers, and the formatted phrase `Ending in 1234` (which the gitleaks regex catches regardless of source). When in doubt, prefer account *nicknames* (`Joint Checking`) over any number at all.
 - **Keep your filled-in memory files outside the repo.** The Quickstart puts them in `~/finance-data/` or similar. Don't move them back in "just to edit them."
-- **Don't paste raw statements into Claude.** Let the `update-financials` skill read from your local JSON/CSV files instead; that way Claude works from the categorized summaries you control, not statement PDFs with account numbers in the header.
+- **Don't paste raw statements into Claude.** Let the `sync-local` skill read from your local JSON/CSV files instead; that way Claude works from the categorized summaries you control, not statement PDFs with account numbers in the header.
 - **Remember conversations are transmitted.** Everything you type to Claude, and every file Claude reads on your behalf during a conversation, goes to Anthropic. That's how the model answers. Don't put anything in a memory file — or a Claude prompt — that you wouldn't be comfortable with Anthropic processing under their retention/training policy.
 - **Review your `~/.claude/settings.json`** before sharing. If you added project-specific env vars or paths, strip anything personal before committing to a public dotfiles repo.
-- **Rotate session cookies** if a scraper profile directory ends up somewhere public.
+- **Don't commit browser session profiles.** If you have a personal automation tool that drops one in this directory, the `.gitignore` blocks the common names — but rotate any session cookies if a profile directory ends up somewhere public.
 
 ## Reporting a vulnerability
 

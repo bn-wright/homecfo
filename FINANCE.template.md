@@ -7,70 +7,62 @@ What this is:
   Open Claude Code in that folder and ask money questions. Claude reads this
   file first and uses it as your CFO briefing.
 
-How to use it (5 minutes):
+How to use it:
   1. Save this file as `FINANCE.md` in any folder on your computer.
      (Recommended: a folder NOT synced to OneDrive/Dropbox/iCloud.)
-  2. Export your transactions from Empower (or Mint, Monarch, your bank) as CSV.
-     Save the CSV in the SAME folder. Name doesn't matter — `transactions.csv`,
-     `empower-export-2026.csv`, anything.
-  3. Open Claude Code in that folder:    cd path/to/folder && claude
-  4. Fill in the "ABOUT YOU" section below with your real numbers.
+  2. Fill in the "ABOUT YOU" section below with your real numbers.
+  3. Pick how Claude gets your transaction/balance data (see DATA SOURCE
+     below). Two options:
+
+     Option A — CSV (Most private, ~2 min)
+       Export your transactions from Empower (or Mint, Monarch, your bank)
+       as CSV. Save it in the SAME folder as this file. Any filename works.
+       Set DATA SOURCE to "csv". Done.
+
+     Option B — Truthifi MCP (Hands-off after setup, ~10 min one-time)
+       Truthifi is a hosted aggregator that syncs your accounts and exposes
+       them over an MCP server Claude can read. One-time: sign up at
+       truthifi.com, link your accounts, follow their docs to add their MCP
+       to Claude Code. Then set DATA SOURCE to "truthifi" and you're done —
+       no more CSV downloads. Honest tradeoff: Truthifi holds your data
+       (same as Empower/Monarch/Copilot already do). See SECURITY.md in the
+       homecfo repo for the full threat model, and docs/integrations/truthifi.md
+       for the current setup walkthrough.
+
+  4. Open Claude Code in that folder:    cd path/to/folder && claude
   5. Ask Claude things like:
         "How are we doing?"
         "Am I on track for my target?"
         "I just spent $3,000 on a couch. Does it matter?"
-        "Update my spending — there's a fresh CSV in this folder."
+        "Update my spending — there's a fresh CSV."          (Option A)
+        "Sync latest from Truthifi."                         (Option B)
 
-What you do NOT need:
-  - To install any skills
-  - To create five separate template files
-  - To touch your global Claude settings
-  - Any technical setup beyond "save file, open Claude"
+What Lite means:
+  - One file in your folder (this one) — no skills to install, no memory
+    templates to manage, no `~/.claude/CLAUDE.md` edits.
+  - Option A adds nothing else. Option B adds a single Claude Code MCP
+    registration (run once, lives in Claude's own config, not your folder).
+  - Full setup only makes sense if you have multiple households, want more
+    specialized skills, or find yourself copying FINANCE.md between folders.
 
 =============================================================================
 PRIVACY — READ THIS BEFORE YOU PASTE ANYTHING
 
-There is an important distinction between Claude Code reading files
-locally and you sending data to Claude in a chat.
+Short version. The full threat model and all three data-destination details
+(your disk, Anthropic, optionally Truthifi) live in SECURITY.md at
+github.com/bn-wright/homecfo/blob/main/SECURITY.md — that's canonical. Read
+it if you care about the details.
 
-  LOCAL (private)            SENT TO ANTHROPIC (not private)
-  ─────────────────────      ───────────────────────────────────────────
-  Claude Code (the CLI)      Claude.ai web app or mobile app
-  reads files from disk      File upload buttons, drag-and-drop into chat
-  in this folder             Pasting CSV contents into a chat message
-                             Screenshots of statements
-
-When you use Claude Code in this folder, the files here ARE read into
-the conversation that Anthropic processes. The privacy claim is not "your
-data is invisible to Anthropic" — it's "your data isn't stored in a
-database somewhere indexed by your account, and it doesn't leave your
-machine until YOU send a message."
-
-Specifically:
-  - Anthropic processes the contents of every message you send, including
-    file contents Claude reads on your behalf during the conversation.
-  - Per Anthropic's policy, conversation data may be retained for safety
-    review and may be used to improve models depending on your account
-    settings. Check claude.com/legal for current terms.
-  - Once a conversation ends and is deleted, the data is no longer
-    accessible to you — but operational logs may persist on Anthropic's
-    side for a period defined by their retention policy.
-
-Practical guidance:
-  - Use Claude Code (this CLI tool) rather than the web/mobile chat. Both
-    transmit file contents to Anthropic during an active conversation, but
-    the CLI doesn't leave uploaded copies sitting in your Anthropic account
-    between sessions — your files only exist on your disk. The web/mobile
-    chat creates a server-side copy of every file you upload, which lives
-    under Anthropic's retention policy until you (or they) delete it.
-  - Do NOT paste account numbers, SSN, routing numbers, full credit card
-    numbers, or login credentials into ANY Claude conversation. Categorized
-    transaction data and round-number balances are reasonable; raw
-    statements with identifiers are not.
-  - If you wouldn't be comfortable with the contents of this file showing
-    up in a future model's training data, don't put it in this file.
-  - Review your Anthropic account's data settings at console.anthropic.com
-    or claude.com/settings — there are toggles for training-data usage.
+The essentials:
+  - When you talk to Claude Code, the file contents Claude reads are
+    transmitted to Anthropic to process your request. This is not optional —
+    it's how the tool works. Anthropic's retention/training policies apply
+    (claude.com/legal).
+  - If you picked Option B (Truthifi), Truthifi also holds your data. That's
+    a hosted-aggregator tradeoff, the same one you already made if you use
+    Empower/Monarch/Copilot. If that's unacceptable, use Option A (CSV).
+  - Use the Claude Code CLI, not the web/mobile chat — the CLI doesn't leave
+    uploaded copies in your Anthropic account between sessions.
 
 What's safer to keep here:
   ✅ Round-number net worth, age, target retirement age
@@ -95,6 +87,15 @@ What does NOT belong in this file or your CSV:
 - **Spouse / partner:** {{Name and age, or "n/a"}}
 - **Kids:** {{Number and ages, or "none"}}
 - **Location:** {{City, state — for cost-of-living context}}
+- **Data source:** csv
+  <!-- Exactly one of: "csv" or "truthifi".
+       "csv"      = Claude parses CSV files in this folder (Option A in the
+                    header above).
+       "truthifi" = Claude pulls from the Truthifi MCP server (Option B).
+                    Requires the Truthifi MCP to be registered with Claude
+                    Code first.
+       Leave as "csv" if unsure — it's the default path and needs nothing
+       beyond a CSV in this folder. -->
 
 ### Income (annual, gross — what you make before taxes)
 
@@ -153,9 +154,12 @@ data.
 ## When the user asks ANY money question
 
 1. Re-read the "ABOUT YOU" section to anchor your numbers.
-2. If the question concerns recent spending, look for CSV files in the current
-   directory (`*.csv`, especially names containing `transaction`, `empower`,
-   `export`, `activity`). Parse them yourself.
+2. Check the **Data source** field. If the question needs recent spending,
+   balances, or holdings:
+   - `csv` → look for CSV files in this directory and parse them (Skill 3).
+   - `truthifi` → use Skill 4 to call Truthifi MCP tools. If the expected
+     Truthifi tools aren't exposed in this session, stop and tell the user
+     the MCP server isn't connected — do NOT silently fall back to CSV.
 3. Apply the right framing skill below.
 4. Answer in **under 200 words** unless the user asks for depth.
 5. Never moralize. The math is the math.
@@ -247,14 +251,103 @@ After parsing, summarize:
 looks materially different from the file above]
 ```
 
-## Skill 4 — Quarterly review (use when user asks for one)
+## Skill 4 — Truthifi MCP sync (use when Data source is "truthifi")
+
+Trigger phrases: "sync from truthifi", "pull latest from truthifi", "refresh
+my truthifi data", plus any money question that needs recent data when
+Data source is "truthifi".
+
+**Prerequisite: discover Truthifi's tools in this session.** The MCP server
+registers tools under a prefix set at install time — in practice it's often a
+random UUID (e.g. `mcp__a1b2c3d4-xxxx-xxxx-xxxx-xxxxxxxxxxxx__get_accounts`),
+not the string `truthifi`. To find the tools without hardcoding, look across
+the available tool names for suffixes matching the logical names below.
+If you can't find any Truthifi-like tools in this session, STOP and tell the
+user the Truthifi MCP isn't connected. Do not fall back to CSV.
+
+**Every Truthifi read tool requires an `include: [...]` array** listing the
+outer-level fields you want back. Without it, the call errors. Pass the full
+outer-field list from the tool's schema unless you have a reason to narrow it.
+
+**Free-tier rate limit: 5 tool calls per day, reset at midnight ET.** This
+shapes the whole skill. Burning all 5 on one "refresh everything" run means
+every later question in the same day gets rate-limited. So:
+
+**Default sync = `*get_accounts` only (1 call).** That's balances, which is
+what almost every routine question needs. Leaves 4 calls for follow-ups.
+Do NOT call more tools on a default sync unless the user asked for something
+else by name.
+
+**Targeted follow-ups (1 call each) when a later question needs data
+balances can't answer:**
+
+| Question | Call |
+|---|---|
+| "What did I spend this week / MTD / on groceries?" | `*get_budget_flows` (or `*get_investment_transactions` for brokerage-only), 30-day window |
+| "What's my asset allocation?" | `*get_composition`, 90-day window |
+| "US vs international?" / "Cap concentration?" | `*get_market_cap_allocation`, today's date (retry earlier if no snapshot) |
+| "Show my holdings." | `*get_dated_holdings`, 90-day window |
+| "Any warnings Truthifi flagged?" | `*get_findings` |
+
+Narrate spend if it's getting tight: *"This uses 1 of your remaining 2
+Truthifi calls today."*
+
+**Full refresh (up to 6 calls)** only if the user explicitly asks for it
+("do a full refresh", "quarterly review", "pull everything"). Before
+issuing, warn them: *"A full refresh uses up to 6 calls; free-tier daily
+limit is 5 so `get_findings` will likely be rate-limited. Proceed?"* and
+wait for confirmation. Then call in priority order (`get_accounts`,
+`get_budget_flows`, `get_dated_holdings`, `get_composition`,
+`get_market_cap_allocation`, `get_findings`) in a single parallel batch.
+
+**Date-window defaults:** transactions = 30 days, holdings/composition =
+90 days (Truthifi doesn't snapshot daily, so 30 is often empty),
+market-cap = single date (today; retry earlier if needed).
+
+If Truthifi's actual tool names drift from this list, enumerate what IS
+exposed and use the closest reasonable matches. Don't invent data.
+
+**Do NOT call write tools** (anything ending in `*create_*`, `*update_*`,
+`*delete_*`, e.g. `*create_asset_liability`) unless the user explicitly asks
+to add or modify a manual entry.
+
+**Partial-failure handling.** If a call returns a rate-limit error, stop
+issuing new calls and report what landed — do NOT retry (resets midnight ET,
+retries just burn tomorrow's budget). If a call returns `{"output": []}`
+that is NOT an error — it means "no data in the requested window," valid
+answer. Only treat explicit errors (rate limit, HTTP error, "no matching
+records found") as failures. Update only the sections you got clean data
+for and tell the user which ones are stale. Don't write empty memory or
+invent numbers.
+
+After parsing, summarize:
+
+```markdown
+## Truthifi sync — {{today's date}}
+
+**Accounts pulled:** N
+**Net worth:** $X ({{± $Δ}} since last sync if known)
+**Top balance moves:** [accounts with >$100 or >1% change]
+**New transactions since last sync:** N
+**Notable:**
+- [Anything surfaced via *get_findings]
+- [Unusual moves worth surfacing]
+**Anything that should change "ABOUT YOU"?** [flag if income, savings rate,
+or target looks materially off]
+```
+
+Honor the **Hard rules** in ABOUT YOU (e.g., skip ESPP deposits, skip
+reimbursements) — Truthifi doesn't know about household-specific exclusions;
+you're the enforcement layer.
+
+## Skill 5 — Quarterly review (use when user asks for one)
 
 Trigger phrases: "quarterly review", "how was last quarter", "give me a
 checkup".
 
-Run all three skills above in sequence:
+Run the ingestion + framing skills in sequence:
 
-1. Ingest the latest CSV
+1. Ingest the latest data (Skill 4 if Truthifi, otherwise Skill 3 for CSV)
 2. Recompute the FI date and compare to last known
 3. Apply perspective to anything in the spending that looks anxiety-inducing
 4. End with one concrete action (or "no action needed").
@@ -262,7 +355,9 @@ Run all three skills above in sequence:
 ## Things to NEVER do
 
 - ❌ Recommend specific stocks, funds, or "you should buy X"
-- ❌ Send any data to any external service
+- ❌ Send data to any service the user has not explicitly opted into. Truthifi
+  MCP (if the user set Data source to "truthifi") is opted-in. Anything else
+  — third-party APIs, analytics, webhooks — is not.
 - ❌ Pretend you're a licensed financial advisor (you're not)
 - ❌ Use vague reassurance like "don't worry about it" without showing the math
 - ❌ Moralize about spending choices

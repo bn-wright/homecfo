@@ -52,4 +52,23 @@ regexes = [
     '''ending\s+in\s+XXXX''',            # template placeholder
     '''\$X[,X]*\.?X*''',                 # dollar placeholders like $X,XXX
     '''\[.*?\]''',                       # markdown placeholders [your name]
+    '''mcp__[a-fxX0-9-]+__''',           # MCP UUID-prefixed tool names (Truthifi etc.) — placeholder UUIDs in docs
+]
+
+# ---------------------------------------------------------------------------
+# Per-file extra rule: catch real-looking MCP UUIDs that aren't the
+# placeholder. The placeholder above (a1b2c3d4-xxxx-...) is allowlisted; any
+# OTHER full UUID embedded in a tool name in docs is almost certainly a real
+# session prefix that leaked from an example.
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "mcp-real-uuid-prefix"
+description = "Real-looking MCP UUID prefix in docs (suggests a real Truthifi session leaked)"
+regex = '''mcp__[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}__'''
+tags = ["mcp", "leak"]
+[rules.allowlist]
+description = "The documented placeholder is the only acceptable form"
+regexes = [
+    '''mcp__a1b2c3d4-xxxx-xxxx-xxxx-xxxxxxxxxxxx__''',
 ]

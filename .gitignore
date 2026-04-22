@@ -5,6 +5,13 @@
 memory/
 !memory/.gitkeep
 
+# Lite path: users copy FINANCE.template.md → FINANCE.md and fill in real
+# numbers. Block the filled-in copy from ever entering Git, while keeping
+# the template tracked.
+FINANCE.md
+finance.md
+!FINANCE.template.md
+
 # Anything that looks like real data
 transactions_*.json
 accounts_*.json

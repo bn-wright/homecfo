@@ -1,6 +1,6 @@
 <!--
 Current investment portfolio: holdings, allocation, net worth.
-Refresh this file via the `update-financials` skill or by hand quarterly.
+Refresh this file via the `sync-local` skill (renamed from `update-financials` in v0.2), `sync-truthifi`, or by hand quarterly.
 -->
 
 # Investments — as of {{YYYY-MM-DD}}

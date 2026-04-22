@@ -6,6 +6,12 @@ Keep entries one line each. Update this file when you add or rename memory files
 
 # Memory Index
 
+**Data source:** csv
+<!-- Exactly one of: "csv" or "truthifi". Tells skills which ingestion path to
+     use. "csv" = local files in your data dir, parsed by `sync-local`.
+     "truthifi" = pulled live from the Truthifi MCP server by `sync-truthifi`.
+     If you switch paths, update this field — the skills route on it. -->
+
 - [User Profile](user_profile.md) — Identity, household, income, accounts, recurring expenses
 - [Investments](investments.md) — Current portfolio: holdings, allocation, net worth as of {{LAST_UPDATED}}
 - [Retirement Snapshot](retirement_snapshot.md) — FI target, timeline, runway projections
